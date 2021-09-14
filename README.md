@@ -8,5 +8,9 @@ The JSON file should contain a single JSON array of JSON objects. Each JSON obje
 key and a "back" key, and each value should be the string to display on the corresponding side of the 
 flashcard. 
 
+JupyterCards is available via pip:
+
+``` pip install jupytercards```
+
 Although using JSON objects for each flashcard is overkill, this model was
 chosen to support future extensions to this library.
