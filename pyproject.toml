@@ -1,0 +1,12 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "jupytercards"
+author = "John M. Shea"
+author-email = "jshea@ieee.org"
+home-page = "https://github.com/jmshea/jupytercards"
+classifiers = [ "License :: OSI Approved :: MIT License",]
+description-file = "README.md"
+
