@@ -183,7 +183,14 @@ function createCards(id) {
         cardnum = (cardnum + 1) % mydiv.dataset.numCards;
     }
     mydiv.dataset.cardnum = cardnum;
-    
+
+    if (cards.length==1) {
+        // Don't show next if no other cards!
+        var next=document.getElementById(id+'-next');
+        next.style.pointerEvents='none';
+        next.classList.add('hide');
+    }
+
     return flipper;
 }
 
