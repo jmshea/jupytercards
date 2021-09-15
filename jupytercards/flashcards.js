@@ -98,7 +98,7 @@ function cleanup(container, frontcard, backcard, next) {
     backcard.className="flipper frontcard";
     container.className="flip-container";
 
-    var cardnum=container.dataset.cardnum;
+    var cardnum=parseInt(container.dataset.cardnum);
     var cards=eval('cards'+container.id);
     var flipper=createOneCard(container, false, cards, cardnum);
     container.append(flipper);
