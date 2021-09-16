@@ -46,7 +46,7 @@ def display_flashcards(ref):
     nextbutton+=div_id+'-next" ';
     nextbutton+='onclick="checkFlip('
     nextbutton+="'"+div_id+"'";
-    nextbutton+=')" > Next > </div>'
+    nextbutton+=')" >  </div>'
     
     #print(nextbutton)
     loadData = '''<script type="text/Javascript">

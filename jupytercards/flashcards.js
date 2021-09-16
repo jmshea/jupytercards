@@ -102,8 +102,14 @@ function cleanup(container, frontcard, backcard, next) {
     var cards=eval('cards'+container.id);
     var flipper=createOneCard(container, false, cards, cardnum);
     container.append(flipper);
+    cardnum= (cardnum+1) % parseInt(container.dataset.numCards);
+    container.dataset.cardnum=cardnum;
+    if (cardnum != 1){
+        next.innerHTML="Next >";
+    } else {
+        next.innerHTML="Reload \\(\\circlearrowleft\\) ";
+    }
     MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    container.dataset.cardnum=(cardnum+1) % container.dataset.numCards;
     next.style.pointerEvents='auto';
     container.style.pointerEvents='auto';
     next.classList.remove('hide');
@@ -185,11 +191,13 @@ function createCards(id) {
     }
     mydiv.dataset.cardnum = cardnum;
 
+    var next=document.getElementById(id+'-next');
     if (cards.length==1) {
         // Don't show next if no other cards!
-        var next=document.getElementById(id+'-next');
         next.style.pointerEvents='none';
         next.classList.add('hide');
+    } else {
+        next.innerHTML="Next >";
     }
 
     return flipper;
