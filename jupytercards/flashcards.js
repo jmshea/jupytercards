@@ -132,7 +132,8 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
     var frontSpan= document.createElement('span');
     frontSpan.className='cardtext';
-    frontSpan.textContent=jaxify(cards[cardnum]['front']);
+    frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
+    //frontSpan.textContent=jaxify(cards[cardnum]['front']);
     front.style.background='var(' + colors[cardnum % colors.length] + ')';
 
 
@@ -145,7 +146,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
     var backSpan= document.createElement('span');
     backSpan.className='cardtext';
-    backSpan.textContent=jaxify(cards[cardnum]['back']);
+    backSpan.innerHTML=jaxify(cards[cardnum]['back']);
     back.append(backSpan);
 
     flipper.append(back);
