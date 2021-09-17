@@ -45,12 +45,3 @@ directory. An additional JSON file is generated for the whole chapter.
 chapter number to use to label the overall JSON definitions file. **This program
 is very specific to my workflow and I am offering it only as reference in case
 it can help someone else with a similar situation.**
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-QTK7LPF0PN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-QTK7LPF0PN');
-</script>
