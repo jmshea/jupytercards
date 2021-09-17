@@ -1,4 +1,3 @@
-<meta name="google-site-verification" content="tGuXXGX2vANwJZ_tiHGqOUOOioabds1NP5AHYlqouLE" />
 
 # JupyterCards
 *JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. 
