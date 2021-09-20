@@ -138,7 +138,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
     var frontSpan= document.createElement('span');
     frontSpan.className='cardtext';
-    frontSpan.innerHTML=jaxify(cards[cardnum]['front']+'\\(\\,\\!\\)');
+    frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
     //frontSpan.textContent=jaxify(cards[cardnum]['front']);
     front.style.background='var(' + colors[cardnum % colors.length] + ')';
 
