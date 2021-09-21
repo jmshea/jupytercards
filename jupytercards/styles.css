@@ -11,6 +11,7 @@
 /* entire container, keeps perspective */
 .flip-container {
 	perspective: 1000px;
+  touch-action: pinch-zoom pan-y;
 }
 
 

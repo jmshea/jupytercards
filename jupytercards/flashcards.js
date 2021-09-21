@@ -119,7 +119,7 @@ function cleanup(container, frontcard, backcard, next) {
           console.log(id);
         */
         checkFlip(container.id);
-    }, {once: true});
+    }, {once: true });
 
 
 }
@@ -186,7 +186,6 @@ function createCards(id) {
           console.log(id);
         */
         checkFlip(id);
-        e.preventDefault();
     }, {once: true});
 
     var cardnum=0;
