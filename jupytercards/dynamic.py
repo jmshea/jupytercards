@@ -17,7 +17,11 @@ def display_flashcards(ref):
     styles += css.decode("utf-8")
     styles += "\n</style>"
 
+    #script ='<script src="swiped-events.min.js"></script>'
+
     script = '<script type="text/Javascript">\n'
+    js = pkg_resources.resource_string(resource_package, "swiped-events.min.js")
+    script += js.decode("utf-8")
     js = pkg_resources.resource_string(resource_package, "flashcards.js")
     script += js.decode("utf-8")
     script += "\n</script>"
