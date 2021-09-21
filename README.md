@@ -10,7 +10,7 @@
 
 Here is an animated GIF showing JupyterCards in action:
 
-![Animated GIF showing the output of JupyterCards for a sample set of 3 cards](flashcards.gif**
+![Animated GIF showing the output of JupyterCards for a sample set of 3 cards](flashcards.gif)
 
 Flash card content can be loaded from:
 * a Python list of dict,
@@ -19,7 +19,7 @@ Flash card content can be loaded from:
 
 As of version 1.7, JupyterCards supports switching cards by swiping left on touch devices. 
 
-**Note*** JupyterCards always requires MathJax to be loaded. If you are using JupyterBook,
+**Note:** JupyterCards always requires MathJax to be loaded. If you are using JupyterBook,
 it may not always load MathJax if you do not have any LaTeX on your page. To resolve this, 
 you can include the invisible math command $\,\!$ in any Markdown cell. I hope to remove
 this requirement in the future.
