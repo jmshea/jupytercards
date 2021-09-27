@@ -37,20 +37,16 @@ def display_flashcards(ref):
     # print(div_id)
 
     # Container
-    #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'   
-    mydiv =  '<div class="flip-container" id="'+ div_id + '" onclick="flip(this)"></div>'    
+    #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'
+    mydiv =  f'<div class="flip-container" id="{div_id}" onclick="flip(this)"></div>'
 
 
 
     #Spacer
     spacer='<div style="height:40px"></div>'
-    
+
     # Next button will go here
-    nextbutton='<div class="next" id="'
-    nextbutton+=div_id+'-next" ';
-    nextbutton+='onclick="checkFlip('
-    nextbutton+="'"+div_id+"'";
-    nextbutton+=')" >  </div>'
+    nextbutton=f"""<div class="next" id="{div_id}-next" onclick="checkFlip('{div_id}')"> </div> """
     
     #print(nextbutton)
     loadData = '''<script type="text/Javascript">
@@ -85,41 +81,32 @@ def display_flashcards(ref):
     '''
     
     if static:
-        loadData += '''
-        createCards("'''
-        loadData+= div_id  + '");'
-        loadData+='''
+        loadData += f'''
+        createCards("{div_id}");
         </script>
         '''
 
         print()
     else:
-        loadData += '''
+        loadData += f'''
 
-        {
+        {{
         const jmscontroller = new AbortController();
         const signal = jmscontroller.signal;
 
         setTimeout(() => jmscontroller.abort(), 5000);
 
-        fetch("'''
-        script_end = '''", {signal})
+        fetch("{url}", {{signal}})
         .then(response => response.json())
-        .then(json => createCards("'''
-        # .then(json => console.log( '''
-
-        script_end += div_id
-        script_end += '''"))
-        .catch(err => {
+        .then(json => createCards("{div_id}"))
+        .catch(err => {{
         console.log("Fetch error or timeout");
-        createCards("'''
-        script_end += div_id+'"'
-        script_end += ''');
-        });
-        }
+        createCards("{div_id}");
+        }});
+        }}
         </script>
         '''
-        loadData+=url+script_end
+        #loadData+=url+script_end
 
 
     #print(loadData)
