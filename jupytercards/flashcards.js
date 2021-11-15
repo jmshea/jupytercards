@@ -1,6 +1,7 @@
 
 function jaxify(string) {
     var mystring = string;
+    console.log(mystring);
 
     count = 0;
     var loc = mystring.search(/([^\\]|^)(\$)/);
@@ -44,6 +45,19 @@ function flip(ths) {
     var next=document.getElementById(ths.id+'-next');
     next.style.pointerEvents='none';
     next.classList.add('flipped');
+    if (typeof MathJax != 'undefined') {
+        var version = MathJax.version;
+        console.log('MathJax version', version);
+        if (version[0] == "2") {
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        } else if (version[0] == "3") {
+            MathJax.typeset([ths]);
+        }
+    } else {
+        console.log('MathJax not detected');
+    }
+
+
     setTimeout(reenableNext, 700, next);
 }
 
@@ -108,8 +122,34 @@ function cleanup(container, frontcard, backcard, next) {
         next.innerHTML="Next >";
     } else {
         next.innerHTML="Reload \\(\\circlearrowleft\\) ";
+        if (typeof MathJax != 'undefined') {
+            var version = MathJax.version;
+            console.log('MathJax version', version);
+            if (version[0] == "2") {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            } else if (version[0] == "3") {
+                MathJax.typeset([next]);
+            }
+        } else {
+            console.log('MathJax not detected');
+        }
+
+
     }
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+
+    if (typeof MathJax != 'undefined') {
+        var version = MathJax.version;
+        console.log('MathJax version', version);
+        if (version[0] == "2") {
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        } else if (version[0] == "3") {
+            MathJax.typeset();
+        }
+    } else {
+        console.log('MathJax not detected');
+    }
+
+
     next.style.pointerEvents='auto';
     container.style.pointerEvents='auto';
     next.classList.remove('hide');
