@@ -6,7 +6,7 @@
 * The other part of this effort is my interactive self-assessment quiz tool, 
 [JupyterQuiz](https://github.com/jmshea/jupyterquiz).  
 * You can see both tools in action in my 
-(in-progress) textbook [Introduction to Data Science for Engineers](https://github.com/jmshea/intro-data-science-for-engineers).
+(in-progress) textbook [Foundations of Data Science with Python](https://jmshea.github.io/Foundations-of-Data-Science-with-Python/).
 
 Here is an animated GIF showing JupyterCards in action:
 
