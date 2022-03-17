@@ -33,12 +33,20 @@ this requirement in the future.
 
 
 ## Notes on JSON File Format
-The JSON file should contain a single JSON array of JSON objects. Each JSON object should have a "front"
-key and a "back" key, and each value should be the string to display on the corresponding side of the 
-flashcard. 
+The JSON file should contain a single JSON array of JSON objects. Each JSON object should have two keys
+that will be utilized:
+* "front": a string containing the text to be shown on the **front** of the card
+* "back": a string containing the text to be shown on the **back** of the card
 
 Although using JSON objects for each flashcard is overkill, this model was
 chosen to support future extensions to this library.
+
+## Making flashcards in Markdown 
+
+As of version 1.9.0, I have added helper functions to convert flashcards created in Markdown to the
+JSON format that JupyterCards expects. In its simplest version, just put the front text in a Markdown
+heading (line starting with #) and put the back text below.   See (Markdown-flashcards.ipynb) for
+more discussion and examples of how to use this functionality.
 
 ## Example of generating flashcard files from JupyterBook notebooks
 
