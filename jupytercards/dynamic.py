@@ -195,13 +195,15 @@ def md2json(md, savefile = False):
     line=line.strip()
     if line:
       if line[0]=="#":
+        while line[0] == "#":
+          line = line[1:]
         # And if we have content for a card, save it to our list of dicts
         if front or back:
           card=makecard(name, front, back)
           cards+=[card]
 
         # Save the name for the new card and initialize the parser state
-        name = line[1:].strip()
+        name = line.strip()
         front=''
         back=''
         onback = False
