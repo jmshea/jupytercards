@@ -18,7 +18,7 @@ def extract_defns(directory, chapter):
         if filename.endswith(".ipynb"):
 
                 
-            with open(filename,'r') as file:
+            with open(directory + "/" + filename,'r') as file:
                
                 if len(defns)>0:
                     print(fileroot, len(defns))
@@ -41,7 +41,7 @@ def extract_defns(directory, chapter):
                         defn_start=1
 
                     if defn_start>0:
-                        if defn_start==3:
+                        if defn_start==4:
                             term=line.replace('",','')
                             term=term.replace('"','')
 
@@ -49,7 +49,7 @@ def extract_defns(directory, chapter):
                             term=term.strip()
                             term=term.replace("\\n","")
                             #print(term)
-                        if defn_start==4:
+                        if defn_start==5:
                             defn=line.replace('",','')
                             defn=defn.replace('"','')
                             defn=defn.replace(':','')
@@ -61,7 +61,7 @@ def extract_defns(directory, chapter):
                         
                         #print(defn_start, line)
                         defn_start+=1
-                    if defn_start==5:
+                    if defn_start==6:
                         #print(term,defn)
                         defn_start=0
                         
@@ -69,7 +69,7 @@ def extract_defns(directory, chapter):
         else:
             continue
 
-    outfile='ch'+str(chapter)+'.json'
+    outfile=flashcards+'ch'+str(chapter)+'.json'
     print(outfile)
     with open(outfile,'w') as out:
         json.dump(chdefns,out,indent=4)
