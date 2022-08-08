@@ -120,7 +120,9 @@
     color: var(--rich-black-fogra-39);
     cursor:pointer;
     font-size: 16pt;
-    left:600px;
+    left:442pt;
+    width: 100pt;
+    height: 22pt;
     opacity:0.3;
     position:relative; 
     top:20px;
