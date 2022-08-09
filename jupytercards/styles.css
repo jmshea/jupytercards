@@ -1,10 +1,10 @@
 :root{
---asparagus: #87a878ff;
---terra-cotta: #e26d5aff;
---cyan-process: #5bc0ebff;
---dark-blue-gray: #666a86ff;
---snow: #fffafbff;
---rich-black-fogra-39: #090c08ff;
+  --asparagus: #87a878ff;
+  --terra-cotta: #e26d5aff;
+  --cyan-process: #5bc0ebff;
+  --dark-blue-gray: #666a86ff;
+  --snow: #fffafbff;
+  --rich-black-fogra-39: #090c08ff;
 }
 
 
@@ -126,6 +126,17 @@
     opacity:0.3;
     position:relative; 
     top:20px;
+}
+
+.next svg {
+    height:16pt;
+    width:16pt;
+    position:relative;
+    top:-2pt;
+}
+
+.jp-OutputArea-output .next svg {
+    top: 1pt;
 }
 
 .next.flipped {
