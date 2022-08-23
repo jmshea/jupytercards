@@ -1,15 +1,13 @@
 
 
-from IPython.core.display import display,  HTML
+from IPython.core.display import display,  HTML, Javascript
 import string
 import random
 import json
-import urllib
+import urllib.request
 import pkg_resources
 
 def display_flashcards(ref):
-
-
 
     resource_package = __name__
     styles = "<style>\n"
@@ -19,12 +17,11 @@ def display_flashcards(ref):
 
     #script ='<script src="swiped-events.min.js"></script>'
 
-    script = '<script type="text/Javascript">\n'
+    script = ''
     js = pkg_resources.resource_string(resource_package, "swiped-events.min.js")
     script += js.decode("utf-8")
     js = pkg_resources.resource_string(resource_package, "flashcards.js")
     script += js.decode("utf-8")
-    script += "\n</script>"
 
     #print(script)
 
@@ -38,7 +35,7 @@ def display_flashcards(ref):
 
     # Container
     #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'
-    mydiv =  f'<div class="flip-container" id="{div_id}" onclick="flip(this)"></div>'
+    mydiv =  f'<div class="flip-container" id="{div_id}" onclick="window.flipCard(this)"></div>'
 
 
 
@@ -46,14 +43,12 @@ def display_flashcards(ref):
     spacer='<div style="height:40px"></div>'
 
     # Next button will go here
-    nextbutton=f"""<div class="next" id="{div_id}-next" onclick="checkFlip('{div_id}')"> </div> """
+    nextbutton=f"""<div class="next" id="{div_id}-next" onclick="window.checkFlip('{div_id}')"> </div> """
     
     #print(nextbutton)
-    loadData = '''<script type="text/Javascript">
-    
-    '''
+    loadData = '\n'
 
-    loadData += "cards"+div_id+"="
+    loadData += "var cards"+div_id+"="
 
     if type(ref) == list:
         #print("List detected. Assuming JSON")
@@ -87,7 +82,6 @@ def display_flashcards(ref):
     if static:
         loadData += f'''
         createCards("{div_id}");
-        </script>
         '''
 
         print()
@@ -108,14 +102,15 @@ def display_flashcards(ref):
         createCards("{div_id}");
         }});
         }}
-        </script>
         '''
         #loadData+=url+script_end
 
 
     #print(loadData)
-    display(HTML(styles+script+loadData+spacer+mydiv+spacer+nextbutton+spacer))
-
+    display(Javascript(script+loadData))
+    display(HTML(styles))
+    display(HTML(spacer+mydiv+spacer+nextbutton+spacer))
+    
 
 # Functions to help make flashcard JSON files
 

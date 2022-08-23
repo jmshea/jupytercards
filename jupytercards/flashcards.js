@@ -3,10 +3,10 @@ function jaxify(string) {
     var mystring = string;
     console.log(mystring);
 
-    count = 0;
+    var count = 0;
     var loc = mystring.search(/([^\\]|^)(\$)/);
 
-    count2 = 0;
+    var count2 = 0;
     var loc2 = mystring.search(/([^\\]|^)(\$\$)/);
 
     //console.log(loc);
@@ -38,7 +38,7 @@ function jaxify(string) {
     return mystring;
 }
 
-function flip(ths) {
+window.flipCard = function flipCard(ths) {
     console.log(ths);
     console.log(ths.id);
     ths.classList.toggle("flip"); 
@@ -88,7 +88,7 @@ function slide2(containerId) {
 }
 
 
-function checkFlip(containerId) {
+window.checkFlip = function checkFlip(containerId) {
     var container = document.getElementById(containerId);
 
 
@@ -167,7 +167,7 @@ function cleanup(container, frontcard, backcard, next) {
 
 
 function createOneCard  (mydiv, frontCard, cards, cardnum) {
-    colors=[
+    var colors=[
         '--asparagus',
         '--terra-cotta',
         '--cyan-process'
