@@ -107,9 +107,9 @@ def display_flashcards(ref):
 
 
     #print(loadData)
-    display(Javascript(script+loadData))
     display(HTML(styles))
     display(HTML(spacer+mydiv+spacer+nextbutton+spacer))
+    display(Javascript(script+loadData))
     
 
 # Functions to help make flashcard JSON files
