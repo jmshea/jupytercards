@@ -31,6 +31,23 @@ this requirement in the future.
 
 ``` pip install jupytercards```
 
+## Keyboard Controls
+
+Verson 2.0.0rc1 adds keyboard controls:
+* Space to flip card over
+* Enter, right arrow, or j to slide to next card
+
+This version is a release candidate, so install like
+
+`pip install jupytercards==2.0.0rc1`
+
+**Notes:** 
+* In Jupyter Book, you may have to click the card to get focus before using the keyboard shortcuts. 
+* In Jupyter Lab, hovering your mouse over the body of the card should be sufficient to send key presses to Jupyter Cards.
+* In both, you may need to avoid math typeset by MathJax because that can intercept key presses.
+* You may disable keyboard control using `keyControl` keyword parameter: `display_flashcards(ref, keyControl = False)`.
+* **If you test the keyboard controls, please add your feedback to the related Issue, or email me/tweet at me.**
+
 
 ## Notes on JSON File Format
 The JSON file should contain a single JSON array of JSON objects. Each JSON object should have two keys
