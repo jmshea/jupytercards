@@ -241,7 +241,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
 
 
-function createCards(id) {
+function createCards(id, keyControl) {
     console.log(id);
     
     var mydiv=document.getElementById(id);
@@ -251,7 +251,10 @@ function createCards(id) {
     mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
     */
     mydiv.onclick = function(){window.flipCard(mydiv);};
-    mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
+    console.log(keyControl);
+    if (keyControl == "True"){
+        mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
+    }
     /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
     /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
 
