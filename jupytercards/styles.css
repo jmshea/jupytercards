@@ -150,6 +150,7 @@
 
 .flashcard{
     border-radius: 10px;
+    outline: none;
     color: #fafafa;
     display:block;
     padding:10px;

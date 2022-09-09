@@ -44,6 +44,7 @@ window.flipCard = function flipCard(ths) {
     ths.classList.toggle("flip"); 
     var next=document.getElementById(ths.id+'-next');
     next.style.pointerEvents='none';
+    /* ths.blur(); */
     next.classList.add('flipped');
     if (typeof MathJax != 'undefined') {
         var version = MathJax.version;
@@ -58,7 +59,7 @@ window.flipCard = function flipCard(ths) {
     }
 
 
-    setTimeout(reenableNext, 700, next);
+    setTimeout(reenableNext, 600, ths, next);
 }
 
 window.checkKey = function checkKey(container, event) {
@@ -69,18 +70,24 @@ window.checkKey = function checkKey(container, event) {
     console.log(event.code);
     */
     /* JMS:  Working here*/
-    if ((event.key == "j") || (event.key == "Enter") || (event.key == "ArrowRight")) {
-        window.checkFlip(container.id);
-    }
-    if (event.key == " ") {
-        window.flipCard(container);
+    var next=document.getElementById(container.id+'-next');
+    /* Only react if not already sliding */
+    if (! next.classList.contains("hide")) {
+        if ((event.key == "j") || (event.key == "Enter") || (event.key == "ArrowRight")) {
+            window.checkFlip(container.id);
+        }
+        if (event.key == " ") {
+            window.flipCard(container);
+        }
     }
     event.preventDefault();
 }
 
 
-function reenableNext(next) {
+function reenableNext(ths, next) {
     next.style.pointerEvents='auto';
+    /* ths.tabIndex= 0;*/
+    /* ths.focus(); */
 }
 
 
@@ -91,6 +98,8 @@ function slide2(containerId) {
     var frontcard = container.children[0];
     var backcard = container.children[1];
     container.style.pointerEvents='none';
+    /* container.removeAttribute("tabindex");*/
+    /* container.blur(); */
     //backcard.style.pointerEvents='none';
     next.style.pointerEvents='none';
     next.classList.remove('flipped');
@@ -122,7 +131,7 @@ window.checkFlip = function checkFlip(containerId) {
 
 function slideback(container, frontcard, backcard, next) {
     container.className="flip-container slideback";
-    setTimeout(cleanup, 600, container, frontcard, backcard, next);
+    setTimeout(cleanup, 550, container, frontcard, backcard, next);
 }
 
 function cleanup(container, frontcard, backcard, next) {
@@ -171,6 +180,8 @@ function cleanup(container, frontcard, backcard, next) {
 
     next.style.pointerEvents='auto';
     container.style.pointerEvents='auto';
+    /* container.tabIndex= 0; */
+    /* container.focus(); */
     next.classList.remove('hide');
     container.addEventListener('swiped-left', function(e) {
         /*
@@ -235,8 +246,12 @@ function createCards(id) {
     
     var mydiv=document.getElementById(id);
     /*mydiv.onclick = window.flipCard(mydiv);*/
+    /*
     mydiv.addEventListener('click', function(){window.flipCard(mydiv);}, false);
     mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
+    */
+    mydiv.onclick = function(){window.flipCard(mydiv);};
+    mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
     /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
     /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
 
