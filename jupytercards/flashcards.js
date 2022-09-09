@@ -61,6 +61,24 @@ window.flipCard = function flipCard(ths) {
     setTimeout(reenableNext, 700, next);
 }
 
+window.checkKey = function checkKey(container, event) {
+    event.stopPropagation();
+    /*
+    console.log(container);
+    console.log(event.key);
+    console.log(event.code);
+    */
+    /* JMS:  Working here*/
+    if ((event.key == "j") || (event.key == "Enter") || (event.key == "ArrowRight")) {
+        window.checkFlip(container.id);
+    }
+    if (event.key == " ") {
+        window.flipCard(container);
+    }
+    event.preventDefault();
+}
+
+
 function reenableNext(next) {
     next.style.pointerEvents='auto';
 }
@@ -216,6 +234,13 @@ function createCards(id) {
     console.log(id);
     
     var mydiv=document.getElementById(id);
+    /*mydiv.onclick = window.flipCard(mydiv);*/
+    mydiv.addEventListener('click', function(){window.flipCard(mydiv);}, false);
+    mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
+    /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
+    /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
+
+    console.log(mydiv);
     
     var cards=eval('cards'+id);
     mydiv.dataset.cardnum=0;
@@ -278,6 +303,8 @@ function createCards(id) {
     } else {
         next.innerHTML="Next >";
     }
+
+    mydiv.focus();
 
     return flipper;
 }

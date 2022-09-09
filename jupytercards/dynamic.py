@@ -35,7 +35,7 @@ def display_flashcards(ref):
 
     # Container
     #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'
-    mydiv =  f'<div class="flip-container" id="{div_id}" onclick="window.flipCard(this)"></div>'
+    mydiv =  f'<div class="flip-container" id="{div_id}" tabindex="0"></div>'
 
 
 
