@@ -133,6 +133,10 @@
 	  transform: rotateY(180deg);
 }
 
+.jp-OutputArea-output .back {
+	  transform: rotateY(180deg) translateX(7.5%);
+}
+
 .next {
     color: var(--rich-black-fogra-39);
     cursor:pointer;
