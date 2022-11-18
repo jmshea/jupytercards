@@ -16,7 +16,8 @@
 
 
 .flip-container.flip .flipper {
-	transform: rotateY(180deg)  translateX(-10%);
+	transform: rotateY(180deg);
+	/*transform: rotateY(180deg)  translateX(-10%); */
 }
 
 
@@ -28,8 +29,8 @@
 
 .flip-container.prepare .flipper.backcard {
     opacity:1;
-    transform:  translateX(20px); 
     transition: display 0s;
+    transform:  translateX(20px); 
 }
 
 
@@ -60,8 +61,11 @@
 
 .flip-container, .front, .back {
 	  height: 300px;
-	  width: 640px;
+	  width: 100%;
 }
+
+
+
 
 .flipper.frontcard {
     position:absolute;
@@ -84,13 +88,26 @@
 .flipper {
     cursor:pointer;
 	  height: 200px;
-    margin-left:20px;
+    margin-left:10px;
 	  position: absolute;
     top: 0;
 	  transform-style: preserve-3d;
 	  transition: 0.6s;
-    width: 600px;
+    width: 95%;
 }
+
+.flashcardtext{
+    color: var(--snow);
+    font-size: 20pt;
+    margin-left:3%;
+    position:absolute;
+    text-align:center;
+    top: 50%;
+    transform: translate(0, -50%);
+    width:90%;
+    font-size: 1.5em;
+}
+
 
 /* hide back of pane during swap */
 .front, .back {
@@ -119,13 +136,14 @@
 .next {
     color: var(--rich-black-fogra-39);
     cursor:pointer;
-    font-size: 16pt;
-    left:442pt;
+    font-size: 1.5em;
+    /*left:90%; */
+    margin-left: 75%;
     width: 100pt;
     height: 22pt;
     opacity:0.3;
     position:relative; 
-    top:20px;
+    top:-1em;
 }
 
 .next svg {
@@ -156,13 +174,31 @@
     padding:10px;
   
 }
-.flashcardtext{
-    color: var(--snow);
-    font-size: 20pt;
-    margin-left:3%;
-    position:absolute;
-    text-align:center;
-    top: 50%;
-    transform: translate(0, -50%);
-    width:90%;
-  }
+
+@media only screen and (min-width:1000px) {
+    .flip-container, .front, .back {
+	      height: 300px;
+	      width: 640px;
+    }
+    .flipper {
+        cursor:pointer;
+	      height: 200px;
+        margin-left:20px;
+	      position: absolute;
+        top: 0;
+	      transform-style: preserve-3d;
+	      transition: 0.6s;
+        width: 600px;
+    }
+    .flashcardtext{
+        font-size: 20pt;
+    }
+    .next {
+        font-size: 16pt;
+        left:442pt;
+        margin-left: 0;
+        width: 100pt;
+        height: 22pt;
+    }
+}
+
