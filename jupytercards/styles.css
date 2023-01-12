@@ -183,6 +183,10 @@
   
 }
 
+.flashcardtext li{
+    text-align: left;
+}
+
 @media only screen and (min-width:1000px) {
 
     .flip-container, .front, .back {
