@@ -16,8 +16,9 @@
 
 
 .flip-container.flip .flipper {
-	transform: rotateY(180deg);
-	/*transform: rotateY(180deg)  translateX(-10%); */
+    box-sizing: content-box;
+	  transform: rotateY(180deg);
+	/* transform: rotateY(180deg)  translateX(-6%);  */
 }
 
 
@@ -25,6 +26,7 @@
     filter: brightness(90%);
     position:absolute;
     z-index: -20;
+    left: 20px;
 }
 
 .flip-container.prepare .flipper.backcard {
@@ -36,10 +38,11 @@
 
 .flip-container.slide .flipper.backcard {
     filter: brightness(115%);
-    height: 360px;
+    /* height: 360px; */
     opacity:1;
 	  transform:  rotateY(3deg)  translateX(700px) translateZ(20px) scale(1, 1.05) rotate(3deg);
     z-index: 20;
+    left: -20px;
 }
 
 
@@ -61,7 +64,7 @@
 
 .flip-container, .front, .back {
 	  height: 200px;
-	  width: 100%;
+	  width: 95%;
 }
 
 
@@ -93,7 +96,8 @@
     top: 0;
 	  transform-style: preserve-3d;
 	  transition: 0.6s;
-    width: 95%;
+    /* width: 95%; */
+    width: 100%;
 }
 
 .flashcardtext{
@@ -197,7 +201,6 @@
     .flipper {
         margin-left:20px;
 	      height: 300px;
-        width: 600px;
     }
 
     .flashcardtext{
