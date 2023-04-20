@@ -42,6 +42,7 @@ window.flipCard = function flipCard(ths) {
     console.log(ths);
     console.log(ths.id);
     ths.classList.toggle("flip"); 
+    ths.focus();
     var next=document.getElementById(ths.id+'-next');
     next.style.pointerEvents='none';
     /* ths.blur(); */
