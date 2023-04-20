@@ -241,7 +241,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
 
 
-function createCards(id, keyControl) {
+function createCards(id, keyControl, grabFocus) {
     console.log(id);
     
     var mydiv=document.getElementById(id);
@@ -322,7 +322,8 @@ function createCards(id, keyControl) {
         next.innerHTML="Next >";
     }
 
-    mydiv.focus();
+    if (grabFocus)
+        mydiv.focus();
 
     return flipper;
 }

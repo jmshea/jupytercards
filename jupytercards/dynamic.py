@@ -7,7 +7,7 @@ import json
 import urllib.request
 import pkg_resources
 
-def display_flashcards(ref, keyControl = True):
+def display_flashcards(ref, keyControl = True, grabFocus=False):
 
     resource_package = __name__
     styles = "<style>\n"
@@ -81,7 +81,7 @@ def display_flashcards(ref, keyControl = True):
     
     if static:
         loadData += f'''
-        createCards("{div_id}", "{keyControl}");
+        createCards("{div_id}", "{keyControl}", "{grabFocus}");
         '''
 
         print()
@@ -96,10 +96,10 @@ def display_flashcards(ref, keyControl = True):
 
         fetch("{url}", {{signal}})
         .then(response => response.json())
-        .then(json => createCards("{div_id}", "{keyControl}"))
+        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}"))
         .catch(err => {{
         console.log("Fetch error or timeout");
-        createCards("{div_id}", "{keyControl}");
+        createCards("{div_id}", "{keyControl}", "{grabFocus}");
         }});
         }}
         '''
