@@ -199,6 +199,7 @@ function cleanup(container, frontcard, backcard, next) {
 function createOneCard  (mydiv, frontCard, cards, cardnum) {
     var colors=eval('frontColors'+mydiv.id);
     var backColors=eval('backColors'+mydiv.id);
+    var textColors=eval('textColors'+mydiv.id);
     //console.log(backColors)
 
     var flipper = document.createElement('div');
@@ -215,6 +216,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
     var frontSpan= document.createElement('span');
     frontSpan.className='flashcardtext';
     frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
+    frontSpan.style.color=textColors[cardnum % textColors.length];
     //frontSpan.textContent=jaxify(cards[cardnum]['front']);
     //front.style.background='var(' + colors[cardnum % colors.length] + ')';
     front.style.background=colors[cardnum % colors.length];
@@ -229,6 +231,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
     var backSpan= document.createElement('span');
     backSpan.className='flashcardtext';
     backSpan.innerHTML=jaxify(cards[cardnum]['back']);
+    backSpan.style.color=textColors[cardnum % textColors.length];
     back.append(backSpan);
 
     flipper.append(back);

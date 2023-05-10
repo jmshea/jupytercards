@@ -9,6 +9,7 @@ import pkg_resources
 def display_flashcards(ref, keyControl = True, grabFocus=False,
                        front_colors=False,
                        back_colors=False,
+                       text_colors=False,
                        ):
 
     front_color_dict=[
@@ -31,6 +32,10 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
         'hsla(208.78,66.49%,36.27%,1)'
     ]
 
+    text_color_dict = [
+        'var(--snow)'
+    ]
+
 
     if front_colors:
         if type(front_colors) == list:
@@ -43,6 +48,11 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
             back_color_dict = back_colors
         elif back_colors == 'jupytercon':
             back_color_dict = jupytercon_back
+
+    if text_colors:
+        if type(text_colors) == list:
+            text_color_dict = text_colors
+
 
 
     resource_package = __name__
@@ -123,6 +133,12 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     for color in back_color_dict[:-1]:
         loadData += f'"{color}", '
     loadData += f'"{back_color_dict[-1]}" ];\n'
+
+    loadData += f"var textColors{div_id}= ["
+    for color in text_color_dict[:-1]:
+        loadData += f'"{color}", '
+    loadData += f'"{text_color_dict[-1]}" ];\n'
+
 
 
     if static:
