@@ -6,8 +6,44 @@ import random
 import json
 import urllib.request
 import pkg_resources
+def display_flashcards(ref, keyControl = True, grabFocus=False,
+                       front_colors=False,
+                       back_colors=False,
+                       ):
 
-def display_flashcards(ref, keyControl = True, grabFocus=False):
+    front_color_dict=[
+        'var(--asparagus)',
+        'var(--terra-cotta)',
+        'var(--cyan-process)'
+    ]
+
+    back_color_dict = [
+        'var(--dark-blue-gray)'
+        ]
+
+    jupytercon_front = [
+        'hsla(17.65,100%,50%,1)',
+        'rgb(234,196,53)',
+        'hsla(200,76.74%,83.14%, 1)'
+    ]
+
+    jupytercon_back = [
+        'hsla(208.78,66.49%,36.27%,1)'
+    ]
+
+
+    if front_colors:
+        if type(front_colors) == list:
+            front_color_dict = front_colors
+        elif front_colors == 'jupytercon':
+            front_color_dict = jupytercon_front
+
+    if back_colors:
+        if type(back_colors) == list:
+            back_color_dict = back_colors
+        elif back_colors == 'jupytercon':
+            back_color_dict = jupytercon_back
+
 
     resource_package = __name__
     styles = "<style>\n"
@@ -48,7 +84,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False):
     #print(nextbutton)
     loadData = '\n'
 
-    loadData += "var cards"+div_id+"="
+    loadData += f"var cards{div_id}="
 
     if type(ref) == list:
         #print("List detected. Assuming JSON")
@@ -76,13 +112,21 @@ def display_flashcards(ref, keyControl = True, grabFocus=False):
     else:
         raise Exception("First argument must be list (JSON), URL, or file ref")
 
-    loadData += ''';
-    '''
-    
+    loadData += ';\n'
+
+    loadData += f"var frontColors{div_id}= ["
+    for color in front_color_dict[:-1]:
+        loadData += f'"{color}", '
+    loadData += f'"{front_color_dict[-1]}" ];\n'
+
+    loadData += f"var backColors{div_id}= ["
+    for color in back_color_dict[:-1]:
+        loadData += f'"{color}", '
+    loadData += f'"{back_color_dict[-1]}" ];\n'
+
+
     if static:
-        loadData += f'''
-        createCards("{div_id}", "{keyControl}", "{grabFocus}");
-        '''
+        loadData += f'''createCards("{div_id}", "{keyControl}", "{grabFocus}"); '''
 
         print()
     else:

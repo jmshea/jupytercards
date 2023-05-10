@@ -1,7 +1,7 @@
 
 function jaxify(string) {
     var mystring = string;
-    console.log(mystring);
+    //console.log(mystring);
 
     var count = 0;
     var loc = mystring.search(/([^\\]|^)(\$)/);
@@ -39,8 +39,8 @@ function jaxify(string) {
 }
 
 window.flipCard = function flipCard(ths) {
-    console.log(ths);
-    console.log(ths.id);
+    //console.log(ths);
+    //console.log(ths.id);
     ths.classList.toggle("flip"); 
     ths.focus();
     var next=document.getElementById(ths.id+'-next');
@@ -49,14 +49,14 @@ window.flipCard = function flipCard(ths) {
     next.classList.add('flipped');
     if (typeof MathJax != 'undefined') {
         var version = MathJax.version;
-        console.log('MathJax version', version);
+        //console.log('MathJax version', version);
         if (version[0] == "2") {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         } else if (version[0] == "3") {
             MathJax.typeset([ths]);
         }
     } else {
-        console.log('MathJax not detected');
+        //console.log('MathJax not detected');
     }
 
 
@@ -153,14 +153,14 @@ function cleanup(container, frontcard, backcard, next) {
         next.innerHTML='Reload <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewbox="0 0 25 26"> <path d="M7,6a10,10,0,1,0,9,0" style="fill:none;stroke:black;stroke-width:2px" id="e2_circleArc"/> <line id="e3_line" x1="17" y1="6.5" x2="17.5" y2="15" style="stroke:black;fill:none;stroke-width:2px"/> <line id="e4_line" x1="16.5" y1="6.5" x2="26" y2="8" style="stroke:black;fill:none;stroke-width:2px"/> </svg> '
         if (typeof MathJax != 'undefined') {
             var version = MathJax.version;
-            console.log('MathJax version', version);
+            //console.log('MathJax version', version);
             if (version[0] == "2") {
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             } else if (version[0] == "3") {
                 MathJax.typeset([next]);
             }
         } else {
-            console.log('MathJax not detected');
+            //console.log('MathJax not detected');
         }
 
 
@@ -168,14 +168,14 @@ function cleanup(container, frontcard, backcard, next) {
 
     if (typeof MathJax != 'undefined') {
         var version = MathJax.version;
-        console.log('MathJax version', version);
+        //console.log('MathJax version', version);
         if (version[0] == "2") {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         } else if (version[0] == "3") {
             MathJax.typeset();
         }
     } else {
-        console.log('MathJax not detected');
+        //console.log('MathJax not detected');
     }
 
 
@@ -197,11 +197,9 @@ function cleanup(container, frontcard, backcard, next) {
 
 
 function createOneCard  (mydiv, frontCard, cards, cardnum) {
-    var colors=[
-        '--asparagus',
-        '--terra-cotta',
-        '--cyan-process'
-    ]
+    var colors=eval('frontColors'+mydiv.id);
+    var backColors=eval('backColors'+mydiv.id);
+    //console.log(backColors)
 
     var flipper = document.createElement('div');
     if (frontCard){
@@ -218,14 +216,15 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
     frontSpan.className='flashcardtext';
     frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
     //frontSpan.textContent=jaxify(cards[cardnum]['front']);
-    front.style.background='var(' + colors[cardnum % colors.length] + ')';
-
+    //front.style.background='var(' + colors[cardnum % colors.length] + ')';
+    front.style.background=colors[cardnum % colors.length];
 
     front.append(frontSpan);
     flipper.append(front);
 
     var back = document.createElement('div');
     back.className='back flashcard';
+    back.style.background=backColors[cardnum % backColors.length];
 
     var backSpan= document.createElement('span');
     backSpan.className='flashcardtext';
@@ -244,7 +243,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
 
 function createCards(id, keyControl, grabFocus) {
     console.log(id);
-    
+
     var mydiv=document.getElementById(id);
     /*mydiv.onclick = window.flipCard(mydiv);*/
     /*
@@ -252,15 +251,15 @@ function createCards(id, keyControl, grabFocus) {
     mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
     */
     mydiv.onclick = function(){window.flipCard(mydiv);};
-    console.log(keyControl);
+    //console.log(keyControl);
     if (keyControl == "True"){
         mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
     }
     /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
     /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
 
-    console.log(mydiv);
-    
+    //console.log(mydiv);
+
     var cards=eval('cards'+id);
     mydiv.dataset.cardnum=0;
     mydiv.dataset.numCards=cards.length;
