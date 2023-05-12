@@ -7,10 +7,33 @@ import json
 import urllib.request
 import pkg_resources
 def display_flashcards(ref, keyControl = True, grabFocus=False,
-                       front_colors=False,
-                       back_colors=False,
-                       text_colors=False,
+                       front_colors=None,
+                       back_colors=None,
+                       text_colors=None,
                        ):
+    '''
+    Display interactive flash cards using a mix of Python and Javascript to support
+    use in rendered notebooks (especially JupyterBook, but also Voila)
+
+    Inputs:
+    ref = string, reference to quiz JSON, may be:
+          - file name
+          - URL
+          - Python list
+
+    keyControl = boolean, whether to support keyboard: right = advance, space = flip
+
+    grabFocus = boolean, whether to put browser focus on this slide deck
+                (may cause browser to jump to the slide deck)
+
+    front_colors
+    back_colors
+    text_colors = None or list of strings specfiying alternate colors.
+                  front_colors, back_colors also support 'jupytercon' to use JupyterCon (2023) color theme
+
+    John  M. Shea
+    2021-2023
+    '''
 
     front_color_dict=[
         'var(--asparagus)',
@@ -69,16 +92,32 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     js = pkg_resources.resource_string(resource_package, "flashcards.js")
     script += js.decode("utf-8")
 
+
+    letters = string.ascii_letters
+    div_id = ''.join(random.choice(letters) for i in range(12))
+    # print(div_id)
+
     #print(script)
+    script += f'''/* This is to handle asynchrony issues in loading Jupyter notebooks
+           where JupyterCards has been previously run. The Javascript was generally
+           being run before the div was added to the DOM. I tried to do this
+           more elegantly using Mutation Observer, but I didn't get it to work.
+
+           Someone more knowledgeable could make this better ;-) */
+
+        function try_create() {{
+          if(document.getElementById("{div_id}")) {{
+            createCards("{div_id}", "{keyControl}", "{grabFocus}");
+          }} else {{
+             setTimeout(try_create, 200);
+          }}
+        }};
+    '''
+
 
 
 
     #print(card["front"], card["back"])
-    letters = string.ascii_letters
-    div_id = ''.join(random.choice(letters) for i in range(12))
-    #div_id='ABBA'
-    # print(div_id)
-
     # Container
     #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'
     mydiv =  f'<div class="flip-container" id="{div_id}" tabindex="0" style="outline:none;"></div>'
@@ -142,7 +181,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
 
     if static:
-        loadData += f'''createCards("{div_id}", "{keyControl}", "{grabFocus}"); '''
+        loadData += f'''try_create(); '''
 
         print()
     else:
