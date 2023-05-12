@@ -147,9 +147,22 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
             url=""
         elif ref.lower().find("http") == 0:
             url = ref
-            file = urllib.request.urlopen(url)
-            for line in file:
-                loadData += line.decode("utf-8")
+            if sys.platform == 'emscripten':
+                try: 
+                    from pyodide.http import open_url
+                except:
+                    try:
+                        from pyodide import open_url
+                    except:
+                        print('Importing open_url failed. Please raise an issue at')
+                        print('https://github.com/jmshea/jupyterquiz/issues')
+
+                loadData += open_url(url).read()
+            else:
+                file = urllib.request.urlopen(url)
+
+                for line in file:
+                    loadData += line.decode("utf-8")
             static = False
         else:
             #print("File detected")
