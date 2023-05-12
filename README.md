@@ -58,6 +58,19 @@ that will be utilized:
 Although using JSON objects for each flashcard is overkill, this model was
 chosen to support future extensions to this library.
 
+## JupyterLite 
+
+As of version 2.5.0, JupyterCards should work on JupyterLite after loading the modulue via `micropip`:
+
+```python
+import micropip
+await micropip.install('jupytercards')
+                       
+from jupytercards import display_flashcards
+github='https://raw.githubusercontent.com/jmshea/foundations-of-data-science-with-python/main/04-probability1/flashcards/'
+display_flashcards(github+'outcomes-samplespaces-events.json')
+```
+
 ## Making flashcards in Markdown 
 
 As of version 1.9.0, I have added helper functions to convert flashcards created in Markdown to the
