@@ -5,7 +5,13 @@ import string
 import random
 import json
 import urllib.request
-import pkg_resources
+#import pkg_resources
+import importlib.resources
+import sys
+
+
+
+
 def display_flashcards(ref, keyControl = True, grabFocus=False,
                        front_colors=None,
                        back_colors=None,
@@ -79,17 +85,22 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
 
     resource_package = __name__
+    package = resource_package.split('.')[0]
+
     styles = "<style>\n"
-    css = pkg_resources.resource_string(resource_package, "styles.css")
+    f = importlib.resources.files(package).joinpath('styles.css')
+    css = f.read_bytes()
     styles += css.decode("utf-8")
     styles += "\n</style>"
 
     #script ='<script src="swiped-events.min.js"></script>'
 
     script = ''
-    js = pkg_resources.resource_string(resource_package, "swiped-events.min.js")
+    f = importlib.resources.files(package).joinpath('swiped-events.min.js')
+    js = f.read_bytes()
     script += js.decode("utf-8")
-    js = pkg_resources.resource_string(resource_package, "flashcards.js")
+    f = importlib.resources.files(package).joinpath('flashcards.js')
+    js = f.read_bytes()
     script += js.decode("utf-8")
 
 
