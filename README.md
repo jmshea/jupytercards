@@ -21,7 +21,7 @@ As of version 1.7, JupyterCards supports switching cards by swiping left on touc
 
 **Note:** JupyterCards always requires MathJax to be loaded. If you are using JupyterBook,
 it may not always load MathJax if you do not have any LaTeX on your page. To resolve this, 
-you can include the invisible math command $\,\!$ in any Markdown cell. I hope to remove
+you can include the invisible math command `$\,\!$` in any Markdown cell. I hope to remove
 this requirement in the future.
 
 
