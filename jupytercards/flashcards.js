@@ -325,7 +325,7 @@ function createCards(id, keyControl, grabFocus) {
         next.innerHTML="Next >";
     }
 
-    if (grabFocus)
+    if (grabFocus == "True" )
         mydiv.focus();
 
     return flipper;
