@@ -218,7 +218,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
         .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}"))
         .catch(err => {{
         console.log("Fetch error or timeout");
-        createCards("{div_id}", "{keyControl}", "{grabFocus}");
+        try_create(); 
         }});
         }}
         '''
