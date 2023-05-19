@@ -41,16 +41,19 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     2021-2023
     '''
 
+    # Specify default front colors
     front_color_dict=[
         'var(--asparagus)',
         'var(--terra-cotta)',
         'var(--cyan-process)'
     ]
 
+    # Specify default back color
     back_color_dict = [
         'var(--dark-blue-gray)'
         ]
 
+    # Define color schemes for JupyterCon (2023)
     jupytercon_front = [
         'hsla(17.65,100%,50%,1)',
         'rgb(234,196,53)',
@@ -61,11 +64,12 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
         'hsla(208.78,66.49%,36.27%,1)'
     ]
 
+    # Specify default text color
     text_color_dict = [
         'var(--snow)'
     ]
 
-
+    # Allow user to specify alternate color schemes
     if front_colors:
         if type(front_colors) == list:
             front_color_dict = front_colors
@@ -83,18 +87,18 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
             text_color_dict = text_colors
 
 
-
+    # Load external style and JavaScript files
     resource_package = __name__
     package = resource_package.split('.')[0]
 
+    # Loading CSS Styles
     styles = "<style>\n"
     f = importlib.resources.files(package).joinpath('styles.css')
     css = f.read_bytes()
     styles += css.decode("utf-8")
     styles += "\n</style>"
 
-    #script ='<script src="swiped-events.min.js"></script>'
-
+    # Load JavaScript files
     script = ''
     f = importlib.resources.files(package).joinpath('swiped-events.min.js')
     js = f.read_bytes()
@@ -103,19 +107,16 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     js = f.read_bytes()
     script += js.decode("utf-8")
 
-
+    # Generate a unique ID for each card set
     letters = string.ascii_letters
     div_id = ''.join(random.choice(letters) for i in range(12))
     # print(div_id)
 
-    #print(script)
-    script += f'''/* This is to handle asynchrony issues in loading Jupyter notebooks
-           where JupyterCards has been previously run. The Javascript was generally
-           being run before the div was added to the DOM. I tried to do this
-           more elegantly using Mutation Observer, but I didn't get it to work.
 
-           Someone more knowledgeable could make this better ;-) */
-
+    # Define a function to be run periodically until the div is present in the DOM.
+    # Someone more knowledgeable might be able to provide a more elegant solution
+    # using Mutation Observer
+    script += f'''
         function try_create() {{
           if(document.getElementById("{div_id}")) {{
             createCards("{div_id}", "{keyControl}", "{grabFocus}");
@@ -127,25 +128,19 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
 
 
-
-    #print(card["front"], card["back"])
-    # Container
-    #mydiv =  '<div class="flip-container" id="'+ div_id + '"></div>'
+    # This will be the container for the cards
     mydiv =  f'<div class="flip-container" id="{div_id}" tabindex="0" style="outline:none;"></div>'
 
 
 
-    #Spacer
+    #Spacer and Next button elements
     spacer='<div style="height:40px"></div>'
-
-    # Next button will go here
     nextbutton=f"""<div class="next" id="{div_id}-next" onclick="window.checkFlip('{div_id}')"> </div> """
-    
-    #print(nextbutton)
     loadData = '\n'
 
     loadData += f"var cards{div_id}="
 
+    # Handling data based on the type of `ref` (string, URL, or Python list)
     if type(ref) == list:
         #print("List detected. Assuming JSON")
         loadData += json.dumps(ref)
@@ -203,7 +198,8 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     loadData += f'"{text_color_dict[-1]}" ];\n'
 
 
-
+    # Depending on whether the data is static or not, try to create the cards immediately
+    # or after fetching data from URL
     if static:
         loadData += f'''try_create(); '''
 
@@ -229,11 +225,11 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
         #loadData+=url+script_end
 
 
-    #print(loadData)
+    # Display the content in the notebook
     display(HTML(styles))
     display(HTML(spacer+mydiv+spacer+nextbutton+spacer))
     display(Javascript(script+loadData))
-    
+
 
 # Functions to help make flashcard JSON files
 
