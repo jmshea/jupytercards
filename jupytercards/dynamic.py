@@ -1,6 +1,6 @@
 
 
-from IPython.core.display import display,  HTML, Javascript
+from IPython.display import display,  HTML, Javascript
 import string
 import random
 import json
