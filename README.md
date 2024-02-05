@@ -1,6 +1,6 @@
 
 # JupyterCards
-*JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. 
+*JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. JupyterCards was created to enable interactive quizzes for readers of my book [*Foundations of Data Science with Python*](https://amzn.to/48cYila) [Affilate Link]
 
 *JupyterCards* is part of my effort to make **open source tools for developing modern, interactive textbooks**.
 * The other part of this effort is my interactive self-assessment quiz tool, 
@@ -90,3 +90,5 @@ directory. An additional JSON file is generated for the whole chapter.
 chapter number to use to label the overall JSON definitions file. **This program
 is very specific to my workflow and I am offering it only as reference in case
 it can help someone else with a similar situation.**
+
+**As an Amazon Associate I earn from qualifying purchases.**
