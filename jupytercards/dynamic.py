@@ -13,9 +13,10 @@ import sys
 
 
 def display_flashcards(ref, keyControl = True, grabFocus=False,
+                       shuffle_cards=False,
                        front_colors=None,
                        back_colors=None,
-                       text_colors=None,
+                       text_colors=None
                        ):
     '''
     Display interactive flash cards using a mix of Python and Javascript to support
@@ -32,10 +33,14 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     grabFocus = boolean, whether to put browser focus on this slide deck
                 (may cause browser to jump to the slide deck)
 
+    shuffle_cards = boolean, whether to present cards in order given or to randomize order
+                    every time you cycle through them
+
     front_colors
     back_colors
     text_colors = None or list of strings specfiying alternate colors.
                   front_colors, back_colors also support 'jupytercon' to use JupyterCon (2023) color theme
+
 
     John  M. Shea
     2021-2023
@@ -119,7 +124,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     script += f'''
         function try_create() {{
           if(document.getElementById("{div_id}")) {{
-            createCards("{div_id}", "{keyControl}", "{grabFocus}");
+            createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}");
           }} else {{
              setTimeout(try_create, 200);
           }}
@@ -215,7 +220,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
         fetch("{url}", {{signal}})
         .then(response => response.json())
-        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}"))
+        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}"))
         .catch(err => {{
         console.log("Fetch error or timeout");
         try_create(); 
