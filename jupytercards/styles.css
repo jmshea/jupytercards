@@ -239,6 +239,10 @@
     .flipper {
 	      height: 300px;
     }
+    .back {
+        left: 4px;
+    }
+
 
 }
 
@@ -250,5 +254,7 @@
     .next {
         margin-left: 65%;
     }
-
+    .back {
+        left: 4px;
+    }
 }
