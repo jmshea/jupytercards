@@ -2,6 +2,8 @@
 # JupyterCards
 *JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. JupyterCards was created to enable interactive quizzes for readers of my book [*Foundations of Data Science with Python*](https://amzn.to/48cYila) [Affilate Link]
 
+**The recommended version of JupyterCards is 2.7.0a4.** It uses a hack to make JupyterCards math work properly on Jupyter Lab/Notebook 4. It also has lots of fixes and support for shuffling cards. You can install it like `pip install jupytercards==2.7.0a4`
+
 *JupyterCards* is part of my effort to make **open source tools for developing modern, interactive textbooks**.
 * The other part of this effort is my interactive self-assessment quiz tool, 
 [JupyterQuiz](https://github.com/jmshea/jupyterquiz).  
