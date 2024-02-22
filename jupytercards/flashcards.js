@@ -146,7 +146,7 @@ function cleanup(container, frontcard, backcard, next) {
 
     var cards=eval('cards'+container.id);
 
-    var flipper=createOneCard(container, false, cards, cardOrder[cardnum]);
+    var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum);
     container.append(flipper);
     cardnum= (cardnum+1) % parseInt(container.dataset.numCards);
     if ((cardnum == 0) && (container.dataset.shuffleCards == "True")) {
@@ -206,7 +206,7 @@ function cleanup(container, frontcard, backcard, next) {
 }
 
 
-function createOneCard  (mydiv, frontCard, cards, cardnum) {
+function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     var colors=eval('frontColors'+mydiv.id);
     var backColors=eval('backColors'+mydiv.id);
     var textColors=eval('textColors'+mydiv.id);
@@ -226,22 +226,22 @@ function createOneCard  (mydiv, frontCard, cards, cardnum) {
     var frontSpan= document.createElement('span');
     frontSpan.className='flashcardtext';
     frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
-    frontSpan.style.color=textColors[cardnum % textColors.length];
+    frontSpan.style.color=textColors[seq % textColors.length];
     //frontSpan.textContent=jaxify(cards[cardnum]['front']);
     //front.style.background='var(' + colors[cardnum % colors.length] + ')';
-    front.style.background=colors[cardnum % colors.length];
+    front.style.background=colors[seq % colors.length];
 
     front.append(frontSpan);
     flipper.append(front);
 
     var back = document.createElement('div');
     back.className='back flashcard';
-    back.style.background=backColors[cardnum % backColors.length];
+    back.style.background=backColors[seq % backColors.length];
 
     var backSpan= document.createElement('span');
     backSpan.className='flashcardtext';
     backSpan.innerHTML=jaxify(cards[cardnum]['back']);
-    backSpan.style.color=textColors[cardnum % textColors.length];
+    backSpan.style.color=textColors[seq % textColors.length];
     back.append(backSpan);
 
     flipper.append(back);
@@ -314,10 +314,10 @@ function createCards(id, keyControl, grabFocus, shuffleCards) {
     
         var flipper;
         if (i==0){
-            flipper=createOneCard(mydiv, true, cards, cardOrder[cardnum]);
+            flipper=createOneCard(mydiv, true, cards, cardOrder[cardnum], cardnum);
         }
         else {
-            flipper=createOneCard(mydiv, false, cards, cardOrder[cardnum]);
+            flipper=createOneCard(mydiv, false, cards, cardOrder[cardnum], cardnum);
         }
 
         mydiv.append(flipper);
