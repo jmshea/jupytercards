@@ -1,6 +1,8 @@
 
 # JupyterCards
-*JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. JupyterCards was created to enable interactive quizzes for readers of my book [*Foundations of Data Science with Python*](https://amzn.to/48cYila) [Affilate Link]
+*JupyterCards* is a tool for displaying **interactive flash cards in Jupyter notebooks and Jupyter Book**. JupyterCards was created to enable interactive quizzes for readers of my book [*Foundations of Data Science with Python*](https://amzn.to/48cYila)<sup>1</sup>
+
+I have collected all of those flashcards into a single set here: [Data Science Flashcards](https://jmshea.github.io/data-science-flashcards/). Or you can see them in the individual sections on the website for the book at [*Foundations of Data Science with Python* &mdash; Online Resources](https://www.fdsp.net).
 
 **The recommended version of JupyterCards is 2.7.0a4.** It uses a hack to make JupyterCards math work properly on Jupyter Lab/Notebook 4. It also has lots of fixes and support for shuffling cards. You can install it like `pip install jupytercards==2.7.0a4`
 
@@ -93,4 +95,4 @@ chapter number to use to label the overall JSON definitions file. **This program
 is very specific to my workflow and I am offering it only as reference in case
 it can help someone else with a similar situation.**
 
-**As an Amazon Associate I earn from qualifying purchases.**
+<sup>1</sup> Affiliate link. As an Amazon Associate I earn from qualifying purchases.
