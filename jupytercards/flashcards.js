@@ -263,10 +263,53 @@ function randomOrderArray(N) {
     return arr;
 }
 
+function createStructuredData(mydiv, cards, title, subject) {
+    var structuredData = {
+        "@context": "https://schema.org/",
+        "@type": "Quiz",
+        "about": {
+            "@type": "Thing"
+        },
+        "educationalAlignment": [
+            {
+                "@type": "AlignmentObject",
+                "alignmentType": "educationalSubject"
+            }
+        ],
+        "hasPart": []
+    };
+
+    structuredData["about"]["name"] = title;
+    structuredData["educationalAlignment"][0]["targetName"] = subject;
+
+    for (var i=0; i<cards.length; i++) {
+        var newPart = {
+            "@context": "https://schema.org/",
+            "@type": "Question",
+            "eduQuestionType": "Flashcard",
+            "acceptedAnswer": {
+                "@type": "Answer",
+            }
+        };
+
+        newPart["text"] = cards[i]["front"];
+        newPart["acceptedAnswer"]["text"] = cards[i]["back"];
+
+        structuredData["hasPart"].push(newPart);
+    }
+    /*console.log(structuredData);*/
+
+    var el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.text = JSON.stringify(structuredData);
+
+    mydiv.appendChild(el);
+
+}
 
 
 
-function createCards(id, keyControl, grabFocus, shuffleCards) {
+function createCards(id, keyControl, grabFocus, shuffleCards, title, subject) {
     console.log(id);
 
     var mydiv=document.getElementById(id);
@@ -308,10 +351,14 @@ function createCards(id, keyControl, grabFocus, shuffleCards) {
         checkFlip(id);
     }, {once: true});
 
+    createStructuredData(mydiv, cards, title, subject);
+
     var cardnum=0;
-    
+
     for (var i=0; i<2; i++) {
-    
+
+
+
         var flipper;
         if (i==0){
             flipper=createOneCard(mydiv, true, cards, cardOrder[cardnum], cardnum);

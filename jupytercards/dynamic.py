@@ -16,7 +16,9 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
                        shuffle_cards=False,
                        front_colors=None,
                        back_colors=None,
-                       text_colors=None
+                       text_colors=None,
+                       title = '',
+                       subject = ''
                        ):
     '''
     Display interactive flash cards using a mix of Python and Javascript to support
@@ -41,9 +43,12 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     text_colors = None or list of strings specfiying alternate colors.
                   front_colors, back_colors also support 'jupytercon' to use JupyterCon (2023) color theme
 
+    title   = string, title of this flashcard set for use in structured data
+    subject = string, subject of this flashcard set for use in structured data
+
 
     John  M. Shea
-    2021-2023
+    2021-2024
     '''
 
     # Specify default front colors
@@ -124,7 +129,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     script += f'''
         function try_create() {{
           if(document.getElementById("{div_id}")) {{
-            createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}");
+            createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}");
           }} else {{
              setTimeout(try_create, 200);
           }}
@@ -220,7 +225,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
         fetch("{url}", {{signal}})
         .then(response => response.json())
-        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}"))
+        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}"))
         .catch(err => {{
         console.log("Fetch error or timeout");
         try_create(); 

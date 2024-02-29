@@ -11,5 +11,5 @@ for the book Introduction to Data Science for Engineers
 All files in the package are distributed under the MIT License
 '''
 
-__version__ = '2.7.0a4'
+__version__ = '3.0.0a1'
 from .dynamic import display_flashcards, md2json
