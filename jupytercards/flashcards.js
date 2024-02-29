@@ -351,7 +351,9 @@ function createCards(id, keyControl, grabFocus, shuffleCards, title, subject) {
         checkFlip(id);
     }, {once: true});
 
-    createStructuredData(mydiv, cards, title, subject);
+    if ((title!="") || (subject != "")){
+        createStructuredData(mydiv, cards, title, subject);
+    }
 
     var cardnum=0;
 
