@@ -303,7 +303,7 @@ function createStructuredData(mydiv, cards, title, subject) {
     el.type = 'application/ld+json';
     el.text = JSON.stringify(structuredData);
 
-    mydiv.appendChild(el);
+    mydiv.parentElement.appendChild(el);
 
 }
 
