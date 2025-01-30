@@ -39,13 +39,9 @@ this requirement in the future.
 
 ## Keyboard Controls
 
-Verson 2.0.0rc1 adds keyboard controls:
+Keyboard controls were added in verson 2.0.0rc1:
 * Space to flip card over
 * Enter, right arrow, or j to slide to next card
-
-This version is a release candidate, so install like
-
-`pip install jupytercards==2.0.0rc1`
 
 **Notes:** 
 * In Jupyter Book, you may have to click the card to get focus before using the keyboard shortcuts. 
