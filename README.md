@@ -4,7 +4,7 @@
 
 I have collected all of those flashcards into a single set here: [Data Science Flashcards](https://jmshea.github.io/data-science-flashcards/). Or you can see them in the individual sections on the website for the book at [*Foundations of Data Science with Python* &mdash; Online Resources](https://www.fdsp.net).
 
-**The recommended version of JupyterCards is 2.7.0a4.** It uses a hack to make JupyterCards math work properly on Jupyter Lab/Notebook 4. It also has lots of fixes and support for shuffling cards. You can install it like `pip install jupytercards==2.7.0a4`
+The current version of JupyterCards uses a hack to make JupyterCards math work properly on Jupyter Lab/Notebook 4. The issue is that Jupyter 4 installs its own custom MathJax, which does not support all the methods of the full MathJax. I install the regular version of MathJax over Jupyter's custom version. I have tried to work with the Jupyter community to have them expose a method that would allow dynamic updates of displayed math code, but this has not been implemented after almost a year, so I feel I have to release this version. **Please submit an issue if you encounter any problems when using Jupter Cards.**
 
 *JupyterCards* is part of my effort to make **open source tools for developing modern, interactive textbooks**.
 * The other part of this effort is my interactive self-assessment quiz tool, 
