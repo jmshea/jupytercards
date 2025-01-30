@@ -139,10 +139,11 @@
 	  backface-visibility: hidden;
     background: var(--dark-blue-gray);
 	  transform: rotateY(180deg);
+    left: 8px;
 }
 
 .jp-OutputArea-output .back {
-	  transform: rotateY(180deg) translateX(7.5%);
+	  transform: rotateY(180deg) translateZ(20px);
 }
 
 .next {
@@ -191,7 +192,7 @@
     text-align: left;
 }
 
-@media only screen and (min-width:1000px) {
+@media only screen and (min-width:700px) {
 
     .flip-container, .front, .back {
 	      height: 300px;
@@ -238,6 +239,10 @@
     .flipper {
 	      height: 300px;
     }
+    .back {
+        left: 4px;
+    }
+
 
 }
 
@@ -249,5 +254,7 @@
     .next {
         margin-left: 65%;
     }
-
+    .back {
+        left: 4px;
+    }
 }
