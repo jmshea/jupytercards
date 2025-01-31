@@ -37,9 +37,13 @@ this requirement in the future.
 
 ``` pip install jupytercards```
 
+## Usage in Python
+
+From Python, call the `display_flashcards()` function. Pass it a reference to your card data file or variable (see **Card Data** below). Examples are shown in the provided Jupyter notebook, `example.ipynb'.
+
 ## Keyboard Controls
 
-Keyboard controls were added in verson 2.0.0rc1:
+Keyboard controls:
 * Space to flip card over
 * Enter, right arrow, or j to slide to next card
 
@@ -51,14 +55,19 @@ Keyboard controls were added in verson 2.0.0rc1:
 * **If you test the keyboard controls, please add your feedback to the related Issue, or email me/tweet at me.**
 
 
-## Notes on JSON File Format
-The JSON file should contain a single JSON array of JSON objects. Each JSON object should have two keys
-that will be utilized:
+## Card Data
+Jupyter Cards is designed to load card data from a remote or local JSON file; card data may also be loaded directly from a Python variable -- see more further below.
+
+The JSON file should contain a single JSON array of JSON objects. Each JSON object must have the following two keys:
 * "front": a string containing the text to be shown on the **front** of the card
 * "back": a string containing the text to be shown on the **back** of the card
 
-Although using JSON objects for each flashcard is overkill, this model was
-chosen to support future extensions to this library.
+In addition, each JSON object *may* have the following optional key:
+* "topic": a string that identifies a topic that can be used to choose a subset of cards in a file
+
+Although using JSON objects for each flashcard is overkill, this model was chosen to support future extensions to this library.
+
+Cards can also be specified as a Python list of dictionaries with the same keys.
 
 ## JupyterLite 
 
