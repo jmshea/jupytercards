@@ -1,6 +1,4 @@
-
-
-from IPython.display import display,  HTML, Javascript
+from IPython.display import display, HTML, Javascript
 import string
 import random
 import json
@@ -10,16 +8,14 @@ import importlib.resources
 import sys
 
 
-
-
-def display_flashcards(ref, keyControl = True, grabFocus=False,
+def display_flashcards(ref, keyControl=True, grabFocus=False,
                        shuffle_cards=False,
                        front_colors=None,
                        back_colors=None,
                        text_colors=None,
-                       title = '',
-                       subject = ''
-                       ):
+                       title='',
+                       subject='',
+                       topics=None):  
     '''
     Display interactive flash cards using a mix of Python and Javascript to support
     use in rendered notebooks (especially JupyterBook, but also Voila)
@@ -46,13 +42,14 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     title   = string, title of this flashcard set for use in structured data
     subject = string, subject of this flashcard set for use in structured data
 
+    topics = string or list, topic or topics to filter flashcards
 
     John  M. Shea
-    2021-2024
+    2021-2025
     '''
 
     # Specify default front colors
-    front_color_dict=[
+    front_color_dict = [
         'var(--asparagus)',
         'var(--terra-cotta)',
         'var(--cyan-process)'
@@ -61,7 +58,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     # Specify default back color
     back_color_dict = [
         'var(--dark-blue-gray)'
-        ]
+    ]
 
     # Define color schemes for JupyterCon (2023)
     jupytercon_front = [
@@ -81,21 +78,20 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
 
     # Allow user to specify alternate color schemes
     if front_colors:
-        if type(front_colors) == list:
+        if isinstance(front_colors, list):
             front_color_dict = front_colors
         elif front_colors == 'jupytercon':
             front_color_dict = jupytercon_front
 
     if back_colors:
-        if type(back_colors) == list:
+        if isinstance(back_colors, list):
             back_color_dict = back_colors
         elif back_colors == 'jupytercon':
             back_color_dict = jupytercon_back
 
     if text_colors:
-        if type(text_colors) == list:
+        if isinstance(text_colors, list):
             text_color_dict = text_colors
-
 
     # Load external style and JavaScript files
     resource_package = __name__
@@ -122,7 +118,6 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     div_id = ''.join(random.choice(letters) for i in range(12))
     # print(div_id)
 
-
     # Define a function to be run periodically until the div is present in the DOM.
     # Someone more knowledgeable might be able to provide a more elegant solution
     # using Mutation Observer
@@ -146,19 +141,20 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     #Spacer and Next button elements
     spacer='<div style="height:40px"></div>'
     nextbutton=f"""<div class="next" id="{div_id}-next" onclick="window.checkFlip('{div_id}')"> </div> """
-    loadData = '\n'
 
-    loadData += f"var cards{div_id}="
 
     # Handling data based on the type of `ref` (string, URL, or Python list)
+    json_data = ""
     if type(ref) == list:
-        #print("List detected. Assuming JSON")
-        loadData += json.dumps(ref)
+        #loadData += json.dumps(ref)
+        all_cards = ref
         static = True
         url = ""
     elif type(ref) == str:
         if ref[0] == "[":
-            loadData += ref
+            #print("String detected. Assuming JSON")
+            #loadData += ref
+            all_cards = json.loads(ref)
             static = True
             url=""
         elif ref.lower().find("http") == 0:
@@ -173,25 +169,50 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
                         print('Importing open_url failed. Please raise an issue at')
                         print('https://github.com/jmshea/jupyterquiz/issues')
 
-                loadData += open_url(url).read()
+                json_data += open_url(url).read()
             else:
                 file = urllib.request.urlopen(url)
 
                 for line in file:
-                    loadData += line.decode("utf-8")
+                    json_data += line.decode("utf-8")
             static = False
+            #print(json_data)
+            all_cards = json.loads(json_data)
         else:
             #print("File detected")
             with open(ref) as file:
                 for line in file:
-                    loadData += line
+                    json_data += line
             static = True
             url = ""
+            #print(json_data)
+            all_cards = json.loads(json_data)
     else:
         raise Exception("First argument must be list (JSON), URL, or file ref")
 
-    loadData += ';\n'
 
+
+    # Filter cards based on topics
+    if topics:
+        if isinstance(topics, str):
+            topics = [topics]
+        #print(topics)
+        cards = []
+        for card in all_cards:
+            if card.get("topic"):
+                if any(topic in card.get("topic") for topic in topics):
+                    cards.append(card)
+
+        # print(cards)
+    else:
+        cards = all_cards
+        # print("No topics", cards)
+
+    # Add the cards to the JavaScript 
+    loadData = '\n'
+    loadData += f"var cards{div_id}={json.dumps(cards)};\n"
+
+    # Add color schemes to the JavaScript
     loadData += f"var frontColors{div_id}= ["
     for color in front_color_dict[:-1]:
         loadData += f'"{color}", '
@@ -213,7 +234,7 @@ def display_flashcards(ref, keyControl = True, grabFocus=False,
     if static:
         loadData += f'''try_create(); '''
 
-        print()
+        #print()
     else:
         loadData += f'''
 
