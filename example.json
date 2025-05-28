@@ -1,1 +1,21 @@
-[{"front": "identity matrix", "back": "A diagonal matrix in which the off-diagonal entries are all zero and the diagonal entries are all equal to 1. The $m \times midentitymatrixisdenoted\\mathbf{I}_m$.  If Ij,k denotes the entry in row j and column k, then Ij,k=1 if j=k and Ij,k=0 if $j\ne k$.", "topic": "linear algebra"}, {"front": "<i>average</i> (or <i>sample mean</i>) of a data set", "back": "The value that minimizes the squared error to the data. For a data set $d_0, d_1, \\ldots, d_{N-1}$ the average is\n \begin{align}\n \\overline{d} = \frac{1}{N} \\sum_{i=0}^{N-1} d_i.\n \\end{align}\n", "topic": "statistics"}, {"front": "expected value<br>(discrete random variable)", "back": "\begin{equation*} \\mu_X = E \\left[ X \right] = \\sum x P_X (x). \\end{equation*}", "topic": "probability"}, {"front": "data", "back": "Collections of measurements, characteristics, or facts about a group."}]
+[
+  {
+    "front": "identity matrix",
+      "back": "A diagonal matrix in which the off-diagonal entries are all zero and the diagonal entries are all equal to 1. The $m \\times m$ identity matrix is denoted $\\mathbf{I}_m$. ",
+    "topic": "linear algebra"
+  },
+  {
+    "front": "<i>average</i> (or <i>sample mean</i>) of a data set",
+    "back": "The value that minimizes the squared error to the data. For a data set $d_0, d_1, \\ldots, d_{N-1}$ the average is \\begin{align} \\overline{d} = \\frac{1}{N} \\sum_{i=0}^{N-1} d_i. \\end{align}",
+    "topic": "statistics"
+  },
+  {
+    "front": "expected value<br>(discrete random variable)",
+    "back": "\\begin{equation*} \\mu_X = E \\left[ X \\right] = \\sum x P_X (x). \\end{equation*}",
+    "topic": "probability"
+  },
+  {
+    "front": "data",
+    "back": "Collections of measurements, characteristics, or facts about a group."
+  }
+]
