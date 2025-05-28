@@ -107,12 +107,14 @@ function slide2(containerId) {
     next.classList.add('hide');
 
     //container.classList.add("prepare");
-    
+
     container.className="flip-container slide";
+
     backcard.parentElement.removeChild(frontcard);
     backcard.parentElement.appendChild(frontcard);
+
     setTimeout(slideback, 600, container, frontcard, backcard, next);
-    
+
 }
 
 
@@ -144,15 +146,16 @@ function cleanup(container, frontcard, backcard, next) {
 
     let cardOrder = JSON.parse(container.dataset.cardOrder);
 
-    var cards=eval('cards'+container.id);
+    //var cards=eval('cards'+container.id);
+    var cards=JSON.parse(container.dataset.cards);
 
     var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum);
     container.append(flipper);
     cardnum= (cardnum+1) % parseInt(container.dataset.numCards);
-    if ((cardnum == 0) && (container.dataset.shuffleCards == "True")) {
+    if ((cardnum == 0) && (container.dataset.shuffleCards == "true")) {
         cardOrder = randomOrderArray(parseInt(container.dataset.numCards));
         container.dataset.cardOrder = JSON.stringify(cardOrder);
-        console.log(cardOrder);
+        //console.log(cardOrder);
     }
 
     container.dataset.cardnum=cardnum;
@@ -207,9 +210,15 @@ function cleanup(container, frontcard, backcard, next) {
 
 
 function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
+    /*
     var colors=eval('frontColors'+mydiv.id);
     var backColors=eval('backColors'+mydiv.id);
     var textColors=eval('textColors'+mydiv.id);
+    */
+    var colors = JSON.parse(mydiv.dataset.frontColors);
+    var backColors = JSON.parse(mydiv.dataset.backColors);
+    var textColors = JSON.parse(mydiv.dataset.textColors);
+
     //console.log(backColors)
 
     var flipper = document.createElement('div');
@@ -309,18 +318,18 @@ function createStructuredData(mydiv, cards, title, subject) {
 
 
 
-function createCards(id, keyControl, grabFocus, shuffleCards, title, subject) {
+function createCards(id, cards, keyControl, grabFocus, shuffleCards, title, subject,
+                    frontColors, backColors, textColors) {
     console.log(id);
 
     var mydiv=document.getElementById(id);
     /*mydiv.onclick = window.flipCard(mydiv);*/
     /*
-    mydiv.addEventListener('click', function(){window.flipCard(mydiv);}, false);
-    mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
+      mydiv.addEventListener('click', function(){window.flipCard(mydiv);}, false);
+      mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
     */
     mydiv.onclick = function(){window.flipCard(mydiv);};
-    //console.log(keyControl);
-    if (keyControl == "True"){
+    if (keyControl == true){
         mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
     }
     /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
@@ -328,19 +337,25 @@ function createCards(id, keyControl, grabFocus, shuffleCards, title, subject) {
 
     //console.log(mydiv);
 
-    var cards=eval('cards'+id);
+    // var cards=eval('cards'+id);
+    // Store cards and color data in the container's dataset for later access in cleanup()
+    mydiv.dataset.cards = JSON.stringify(cards);
+    mydiv.dataset.frontColors = JSON.stringify(frontColors);
+    mydiv.dataset.backColors = JSON.stringify(backColors);
+    mydiv.dataset.textColors = JSON.stringify(textColors);
+
     mydiv.dataset.cardnum=0;
     mydiv.dataset.numCards=cards.length;
 
     mydiv.dataset.shuffleCards = shuffleCards;
     var cardOrder;
-    if (shuffleCards == "True"){
+    if (shuffleCards == true){
         cardOrder = randomOrderArray(cards.length);
     } else {
         cardOrder = Array.from({ length: cards.length }, (_, index) => index);
     }
     mydiv.dataset.cardOrder = JSON.stringify(cardOrder);
-    console.log(mydiv.dataset.cardOrder);
+    //console.log(mydiv.dataset.cardOrder);
 
 
     mydiv.addEventListener('swiped-left', function(e) {
@@ -452,7 +467,7 @@ function createCards(id, keyControl, grabFocus, shuffleCards, title, subject) {
         next.innerHTML="Next >";
     }
 
-    if (grabFocus == "True" )
+    if (grabFocus == true )
         mydiv.focus();
 
     return flipper;

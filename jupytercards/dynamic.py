@@ -5,7 +5,98 @@ import json
 import urllib.request
 #import pkg_resources
 import importlib.resources
+from typing import Any, List, Dict, Tuple, Union, Optional
+from urllib.parse import urlparse
+try:
+    # Python 3.9+
+    from importlib.resources import files
+except ImportError:
+    # Backport for older Pythons
+    from importlib_resources import files
 import sys
+
+# Helper functions to break up display logic
+def _load_resources() -> Tuple[str, str]:
+    """Load CSS and JS resources as HTML/JS strings."""
+    pkg = __name__.split('.')[0]
+    css_path = files(pkg).joinpath('styles.css')
+    js1_path = files(pkg).joinpath('swiped-events.min.js')
+    js2_path = files(pkg).joinpath('flashcards.js')
+    css = css_path.read_bytes().decode('utf-8')
+    js1 = js1_path.read_bytes().decode('utf-8')
+    js2 = js2_path.read_bytes().decode('utf-8')
+    styles = f"<style>\n{css}\n</style>"
+    script = js1 + js2
+    return styles, script
+
+def _parse_ref(ref: Union[str, List[Dict[str, Any]]]) -> Tuple[List[Dict[str, Any]], bool, Optional[str]]:
+    """Parse the ref into cards list, static flag, and optional URL."""
+    if isinstance(ref, list):
+        return ref, True, None
+    if isinstance(ref, str):
+        s = ref.strip()
+        # JSON string
+        if s.startswith('['):
+            return json.loads(s), True, None
+        # URL
+        parsed = urlparse(s)
+        if parsed.scheme in ('http', 'https'):
+            data = urllib.request.urlopen(s).read().decode('utf-8')
+            return json.loads(data), False, s
+        # File path
+        with open(s) as f:
+            return json.load(f), True, None
+    raise ValueError("ref must be a list, JSON string, URL, or file path")
+
+def _filter_cards(cards: List[Dict[str, Any]], topics: Optional[Union[str, List[str]]]) -> List[Dict[str, Any]]:
+    """Filter cards by topics if provided."""
+    if not topics:
+        return cards
+    if isinstance(topics, str):
+        topics = [topics]
+    filtered: List[Dict[str, Any]] = []
+    for card in cards:
+        t = card.get('topic')
+        if isinstance(t, list):
+            if any(topic in t for topic in topics):
+                filtered.append(card)
+        else:
+            if any(topic == t for topic in topics):
+                filtered.append(card)
+    return filtered
+
+def _build_js(div_id: str,
+              cards: List[Dict[str, Any]],
+              front_colors: List[str],
+              back_colors: List[str],
+              text_colors: List[str],
+              keyControl: bool,
+              grabFocus: bool,
+              shuffle_cards: bool,
+              title: str,
+              subject: str,
+              static: bool,
+              url: Optional[str]) -> str:
+    """Build the JavaScript payload to initialize flashcards."""
+    parts: List[str] = []
+    parts.append(f"var cards{div_id} = {json.dumps(cards)};")
+    parts.append(f"var frontColors{div_id} = {json.dumps(front_colors)};")
+    parts.append(f"var backColors{div_id} = {json.dumps(back_colors)};")
+    parts.append(f"var textColors{div_id} = {json.dumps(text_colors)};")
+    # MutationObserver to wait for div
+    observer = f"""(function() {{
+    var observer = new MutationObserver(function(mutations, obs) {{
+    var el = document.getElementById(\"{div_id}\");
+    if (el) {{
+    createCards(\"{div_id}\", cards{div_id}, {str(keyControl).lower()}, {str(grabFocus).lower()}, {str(shuffle_cards).lower()}, {json.dumps(title)}, {json.dumps(subject)}, frontColors{div_id}, backColors{div_id}, textColors{div_id});
+    obs.disconnect();
+    }}
+    }});
+    observer.observe(document.body, {{ childList: true, subtree: true }});
+    }})();"""
+    parts.append(observer)
+
+    return "\n".join(parts)
 
 
 def display_flashcards(ref, keyControl=True, grabFocus=False,
@@ -93,44 +184,13 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
         if isinstance(text_colors, list):
             text_color_dict = text_colors
 
-    # Load external style and JavaScript files
-    resource_package = __name__
-    package = resource_package.split('.')[0]
-
-    # Loading CSS Styles
-    styles = "<style>\n"
-    f = importlib.resources.files(package).joinpath('styles.css')
-    css = f.read_bytes()
-    styles += css.decode("utf-8")
-    styles += "\n</style>"
-
-    # Load JavaScript files
-    script = ''
-    f = importlib.resources.files(package).joinpath('swiped-events.min.js')
-    js = f.read_bytes()
-    script += js.decode("utf-8")
-    f = importlib.resources.files(package).joinpath('flashcards.js')
-    js = f.read_bytes()
-    script += js.decode("utf-8")
+    # Load external CSS and JavaScript resources
+    styles, script = _load_resources()
 
     # Generate a unique ID for each card set
     letters = string.ascii_letters
     div_id = ''.join(random.choice(letters) for i in range(12))
     # print(div_id)
-
-    # Define a function to be run periodically until the div is present in the DOM.
-    # Someone more knowledgeable might be able to provide a more elegant solution
-    # using Mutation Observer
-    script += f'''
-        function try_create() {{
-          if(document.getElementById("{div_id}")) {{
-            createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}");
-          }} else {{
-             setTimeout(try_create, 200);
-          }}
-        }};
-    '''
-
 
 
     # This will be the container for the cards
@@ -209,52 +269,54 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
         # print("No topics", cards)
 
     # Add the cards to the JavaScript 
-    loadData = '\n'
-    loadData += f"var cards{div_id}={json.dumps(cards)};\n"
+    # loadData = '\n'
+    # loadData += f"var cards{div_id}={json.dumps(cards)};\n"
 
-    # Add color schemes to the JavaScript
-    loadData += f"var frontColors{div_id}= ["
-    for color in front_color_dict[:-1]:
-        loadData += f'"{color}", '
-    loadData += f'"{front_color_dict[-1]}" ];\n'
+    # # Add color schemes to the JavaScript
+    # loadData += f"var frontColors{div_id}= ["
+    # for color in front_color_dict[:-1]:
+    #     loadData += f'"{color}", '
+    # loadData += f'"{front_color_dict[-1]}" ];\n'
 
-    loadData += f"var backColors{div_id}= ["
-    for color in back_color_dict[:-1]:
-        loadData += f'"{color}", '
-    loadData += f'"{back_color_dict[-1]}" ];\n'
+    # loadData += f"var backColors{div_id}= ["
+    # for color in back_color_dict[:-1]:
+    #     loadData += f'"{color}", '
+    # loadData += f'"{back_color_dict[-1]}" ];\n'
 
-    loadData += f"var textColors{div_id}= ["
-    for color in text_color_dict[:-1]:
-        loadData += f'"{color}", '
-    loadData += f'"{text_color_dict[-1]}" ];\n'
+    # loadData += f"var textColors{div_id}= ["
+    # for color in text_color_dict[:-1]:
+    #     loadData += f'"{color}", '
+    # loadData += f'"{text_color_dict[-1]}" ];\n'
 
 
-    # Depending on whether the data is static or not, try to create the cards immediately
-    # or after fetching data from URL
-    if static:
-        loadData += f'''try_create(); '''
+    # # Depending on whether the data is static or not, try to create the cards immediately
+    # # or after fetching data from URL
+    # if static:
+    #     loadData += f'''try_create(); '''
 
-        #print()
-    else:
-        loadData += f'''
+    #     #print()
+    # else:
+    #     loadData += f'''
 
-        {{
-        const jmscontroller = new AbortController();
-        const signal = jmscontroller.signal;
+    #     {{
+    #     const jmscontroller = new AbortController();
+    #     const signal = jmscontroller.signal;
 
-        setTimeout(() => jmscontroller.abort(), 5000);
+    #     setTimeout(() => jmscontroller.abort(), 5000);
 
-        fetch("{url}", {{signal}})
-        .then(response => response.json())
-        .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}"))
-        .catch(err => {{
-        console.log("Fetch error or timeout");
-        try_create(); 
-        }});
-        }}
-        '''
-        #loadData+=url+script_end
+    #     fetch("{url}", {{signal}})
+    #     .then(response => response.json())
+    #     .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}"))
+    #     .catch(err => {{
+    #     console.log("Fetch error or timeout");
+    #     try_create(); 
+    #     }});
+    #     }}
+    #     '''
+    #     #loadData+=url+script_end
 
+    loadData =_build_js(div_id, cards, front_color_dict, back_color_dict, text_color_dict,
+                        keyControl, grabFocus, shuffle_cards, title, subject, static, url) 
 
     # Display the content in the notebook
     display(HTML(styles))
