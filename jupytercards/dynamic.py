@@ -78,22 +78,27 @@ def _build_js(div_id: str,
               static: bool,
               url: Optional[str]) -> str:
     """Build the JavaScript payload to initialize flashcards."""
-    parts: List[str] = []
-    parts.append(f"var cards{div_id} = {json.dumps(cards)};")
-    parts.append(f"var frontColors{div_id} = {json.dumps(front_colors)};")
-    parts.append(f"var backColors{div_id} = {json.dumps(back_colors)};")
-    parts.append(f"var textColors{div_id} = {json.dumps(text_colors)};")
-    # MutationObserver to wait for div
+    # MutationObserver to wait for div, set dataset attributes, and initialize cards
     observer = f"""(function() {{
     var observer = new MutationObserver(function(mutations, obs) {{
-    var el = document.getElementById(\"{div_id}\");
-    if (el) {{
-    createCards(\"{div_id}\", cards{div_id}, {str(keyControl).lower()}, {str(grabFocus).lower()}, {str(shuffle_cards).lower()}, {json.dumps(title)}, {json.dumps(subject)}, frontColors{div_id}, backColors{div_id}, textColors{div_id});
-    obs.disconnect();
-    }}
+        var el = document.getElementById("{div_id}");
+        if (el) {{
+            el.dataset.cards = JSON.stringify({json.dumps(cards)});
+            el.dataset.frontColors = JSON.stringify({json.dumps(front_colors)});
+            el.dataset.backColors = JSON.stringify({json.dumps(back_colors)});
+            el.dataset.textColors = JSON.stringify({json.dumps(text_colors)});
+            el.dataset.keyControl = {str(keyControl).lower()};
+            el.dataset.grabFocus = {str(grabFocus).lower()};
+            el.dataset.shuffleCards = {str(shuffle_cards).lower()};
+            el.dataset.title = {json.dumps(title)};
+            el.dataset.subject = {json.dumps(subject)};
+            createCards("{div_id}");
+            obs.disconnect();
+        }}
     }});
     observer.observe(document.body, {{ childList: true, subtree: true }});
-    }})();"""
+}})();"""
+    parts: List[str] = []
     parts.append(observer)
 
     return "\n".join(parts)
@@ -193,8 +198,17 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     # print(div_id)
 
 
-    # This will be the container for the cards
-    mydiv =  f'<div class="flip-container" id="{div_id}" tabindex="0" style="outline:none;"></div>'
+    # This will be the container for the cards, bootstrap topics to Javascript
+    # Prepare topics list for JS
+    if topics:
+        if isinstance(topics, str):
+            _topics_list = [topics]
+        else:
+            _topics_list = topics
+    else:
+        _topics_list = []
+    _topics_json = json.dumps(_topics_list)
+    mydiv = f'<div class="flip-container" id="{div_id}" data-topics=\'{_topics_json}\' tabindex="0" style="outline:none;"></div>'
 
 
 
@@ -267,53 +281,6 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     else:
         cards = all_cards
         # print("No topics", cards)
-
-    # Add the cards to the JavaScript 
-    # loadData = '\n'
-    # loadData += f"var cards{div_id}={json.dumps(cards)};\n"
-
-    # # Add color schemes to the JavaScript
-    # loadData += f"var frontColors{div_id}= ["
-    # for color in front_color_dict[:-1]:
-    #     loadData += f'"{color}", '
-    # loadData += f'"{front_color_dict[-1]}" ];\n'
-
-    # loadData += f"var backColors{div_id}= ["
-    # for color in back_color_dict[:-1]:
-    #     loadData += f'"{color}", '
-    # loadData += f'"{back_color_dict[-1]}" ];\n'
-
-    # loadData += f"var textColors{div_id}= ["
-    # for color in text_color_dict[:-1]:
-    #     loadData += f'"{color}", '
-    # loadData += f'"{text_color_dict[-1]}" ];\n'
-
-
-    # # Depending on whether the data is static or not, try to create the cards immediately
-    # # or after fetching data from URL
-    # if static:
-    #     loadData += f'''try_create(); '''
-
-    #     #print()
-    # else:
-    #     loadData += f'''
-
-    #     {{
-    #     const jmscontroller = new AbortController();
-    #     const signal = jmscontroller.signal;
-
-    #     setTimeout(() => jmscontroller.abort(), 5000);
-
-    #     fetch("{url}", {{signal}})
-    #     .then(response => response.json())
-    #     .then(json => createCards("{div_id}", "{keyControl}", "{grabFocus}", "{shuffle_cards}", "{title}", "{subject}"))
-    #     .catch(err => {{
-    #     console.log("Fetch error or timeout");
-    #     try_create(); 
-    #     }});
-    #     }}
-    #     '''
-    #     #loadData+=url+script_end
 
     loadData =_build_js(div_id, cards, front_color_dict, back_color_dict, text_color_dict,
                         keyControl, grabFocus, shuffle_cards, title, subject, static, url) 

@@ -38,6 +38,21 @@ function jaxify(string) {
     return mystring;
 }
 
+/**
+ * Set active topics on a flashcard container and re-render cards.
+ * @param {string|Element} idOrElem - The container's id or the DOM element.
+ * @param {string|string[]} topics - Topic or array of topics to filter by.
+ */
+window.setTopics = function(idOrElem, topics) {
+    var mydiv = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
+    if (!mydiv) return;
+    // Normalize topics to array
+    var topicsArr = Array.isArray(topics) ? topics : (typeof topics === 'string' ? [topics] : []);
+    mydiv.dataset.topics = JSON.stringify(topicsArr);
+    // Re-render cards
+    createCards(mydiv.id);
+};
+
 window.flipCard = function flipCard(ths) {
     //console.log(ths);
     //console.log(ths.id);
@@ -318,20 +333,65 @@ function createStructuredData(mydiv, cards, title, subject) {
 
 
 
-function createCards(id, cards, keyControl, grabFocus, shuffleCards, title, subject,
-                    frontColors, backColors, textColors) {
-    console.log(id);
+function createCards(id) {
+    var mydiv = document.getElementById(id);
+    if (!mydiv) return;
 
-    var mydiv=document.getElementById(id);
-    /*mydiv.onclick = window.flipCard(mydiv);*/
-    /*
-      mydiv.addEventListener('click', function(){window.flipCard(mydiv);}, false);
-      mydiv.addEventListener('keydown', function(event){window.checkKey(mydiv,event);}, true);
-    */
-    mydiv.onclick = function(){window.flipCard(mydiv);};
-    if (keyControl == true){
-        mydiv.onkeydown = function(event){window.checkKey(mydiv,event);};
+    // Retrieve parameters from dataset
+    var keyControl = mydiv.dataset.keyControl === 'true';
+    var grabFocus = mydiv.dataset.grabFocus === 'true';
+    var shuffleCards = mydiv.dataset.shuffleCards === 'true';
+    var title = mydiv.dataset.title || '';
+    var subject = mydiv.dataset.subject || '';
+    var frontColors = JSON.parse(mydiv.dataset.frontColors || '[]');
+    var backColors = JSON.parse(mydiv.dataset.backColors || '[]');
+    var textColors = JSON.parse(mydiv.dataset.textColors || '[]');
+
+    // Bootstrap topics: filter cards based on data-topics attribute
+    var topics = [];
+    if (mydiv.dataset.topics) {
+        try {
+            topics = JSON.parse(mydiv.dataset.topics);
+        } catch (e) {
+            topics = [mydiv.dataset.topics];
+        }
     }
+
+    // Initialize cards array from dataset
+    var cards = JSON.parse(mydiv.dataset.cards || '[]');
+
+    // Preserve full set of cards in dataset.fullCards
+    var fullCards;
+    if (mydiv.dataset.fullCards) {
+        fullCards = JSON.parse(mydiv.dataset.fullCards);
+    } else {
+        fullCards = cards;
+        mydiv.dataset.fullCards = JSON.stringify(fullCards);
+    }
+
+    // Filter cards by topics if provided
+    if (topics.length > 0) {
+        cards = fullCards.filter(function(card) {
+            var t = card.topic;
+            if (Array.isArray(t)) {
+                return topics.some(function(topic) { return t.includes(topic); });
+            }
+            return topics.includes(t);
+        });
+    } else {
+        cards = fullCards;
+    }
+
+    // Set up click and keyboard controls
+    mydiv.onclick = function(){ window.flipCard(mydiv); };
+    if (keyControl) {
+        mydiv.onkeydown = function(event){ window.checkKey(mydiv, event); };
+    }
+    // Save parameters for dynamic topic changes
+    mydiv.dataset.keyControl = keyControl;
+    mydiv.dataset.grabFocus = grabFocus;
+    mydiv.dataset.title = title;
+    mydiv.dataset.subject = subject;
     /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
     /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
 
@@ -472,6 +532,14 @@ function createCards(id, cards, keyControl, grabFocus, shuffleCards, title, subj
 
     return flipper;
 }
+// Helper to change topics and re-render flashcards dynamically
+window.setTopics = function(idOrElem, topics) {
+    var mydiv = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
+    if (!mydiv) return;
+    var topicsArr = Array.isArray(topics) ? topics : (typeof topics === 'string' ? [topics] : []);
+    mydiv.dataset.topics = JSON.stringify(topicsArr);
+    createCards(mydiv.id);
+};
 
 
 
