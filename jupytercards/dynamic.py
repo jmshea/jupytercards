@@ -191,6 +191,9 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
 
     # Load external CSS and JavaScript resources
     styles, script = _load_resources()
+    # Load SVG symbols
+    symbols_path = files(__name__.split('.')[0]).joinpath('svg-symbols.svg')
+    svg_symbols = symbols_path.read_bytes().decode('utf-8')
 
     # Generate a unique ID for each card set
     letters = string.ascii_letters
@@ -274,6 +277,7 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
 
     # Display the content in the notebook
     display(HTML(styles))
+    display(HTML(svg_symbols))
     display(HTML(spacer+mydiv+spacer+nextbutton+spacer))
     display(Javascript(script+loadData))
 
