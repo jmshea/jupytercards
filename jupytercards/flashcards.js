@@ -254,8 +254,23 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     //frontSpan.textContent=jaxify(cards[cardnum]['front']);
     //front.style.background='var(' + colors[cardnum % colors.length] + ')';
     front.style.background=colors[seq % colors.length];
-
     front.append(frontSpan);
+
+    // Add check mark symbol for card known
+    var knownSpan= document.createElement('span');
+    knownSpan.className = 'flashcardKnown';
+    knownSpan.innerHTML= '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#check-mark"/></svg>';
+    front.append(knownSpan);
+
+    // Add x mark symbol for card not known
+    var notKnownSpan= document.createElement('span');
+    notKnownSpan.className = 'flashcardNotKnown';
+    notKnownSpan.innerHTML= '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#x-mark"/></svg>';
+    front.append(notKnownSpan);
+
+
+
+
     flipper.append(front);
 
     var back = document.createElement('div');

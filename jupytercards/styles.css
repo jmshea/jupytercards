@@ -115,6 +115,25 @@
     font-size: 1.2em;
 }
 
+.flashcardKnown {
+    display: block;
+    position: relative;
+    top: 90%;
+    left: 85%;
+    width: 2em;
+    height: auto;
+}
+
+.flashcardNotKnown {
+    display: block;
+    position: relative;
+    top: 80%;
+    left: 94%;
+    width: 1.3em;
+    height: auto;
+}
+
+
 
 
 /* hide back of pane during swap */
