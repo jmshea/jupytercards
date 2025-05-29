@@ -266,21 +266,8 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
 
 
 
-    # Filter cards based on topics
-    if topics:
-        if isinstance(topics, str):
-            topics = [topics]
-        #print(topics)
-        cards = []
-        for card in all_cards:
-            if card.get("topic"):
-                if any(topic in card.get("topic") for topic in topics):
-                    cards.append(card)
-
-        # print(cards)
-    else:
-        cards = all_cards
-        # print("No topics", cards)
+    # Pass all cards to the frontend for filtering by topics
+    cards = all_cards
 
     loadData =_build_js(div_id, cards, front_color_dict, back_color_dict, text_color_dict,
                         keyControl, grabFocus, shuffle_cards, title, subject, static, url) 
