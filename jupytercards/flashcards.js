@@ -108,15 +108,14 @@ function reenableNext(ths, next) {
 
 
 
-function slide2(containerId) {
+function slide2(containerId, mode) {
     var container = document.getElementById(containerId);
     var next=document.getElementById(containerId+'-next');
     var frontcard = container.children[0];
     var backcard = container.children[1];
     container.style.pointerEvents='none';
-    /* container.removeAttribute("tabindex");*/
-    /* container.blur(); */
-    //backcard.style.pointerEvents='none';
+
+    // Hide the next button until done sliding
     next.style.pointerEvents='none';
     next.classList.remove('flipped');
     next.classList.add('hide');
@@ -128,7 +127,7 @@ function slide2(containerId) {
     backcard.parentElement.removeChild(frontcard);
     backcard.parentElement.appendChild(frontcard);
 
-    setTimeout(slideback, 600, container, frontcard, backcard, next);
+    setTimeout(slideback, 600, container, frontcard, backcard, next, mode);
 
 }
 
@@ -139,59 +138,145 @@ window.checkFlip = function checkFlip(containerId) {
 
     if (container.classList.contains('flip')) {
         container.classList.remove('flip');
-        setTimeout(slide2, 600, containerId);
+        setTimeout(slide2, 600, containerId, 'next');
     } 
     else {
-        slide2(containerId);
+        slide2(containerId, 'next');
     }
 }
 
 
-function slideback(container, frontcard, backcard, next) {
+function slideback(container, frontcard, backcard, next, mode) {
     container.className="flip-container slideback";
-    setTimeout(cleanup, 550, container, frontcard, backcard, next);
+    setTimeout(cleanup, 550, container, frontcard, backcard, next, mode);
 }
 
-function cleanup(container, frontcard, backcard, next) {
+function cleanup(container, frontcard, backcard, next, mode) {
+
+    var deleteCards = JSON.parse(container.dataset.deleteList || '[]');
+
+    if (mode == "known") {
+        deleteCards.push(JSON.parse(frontcard.dataset.cardnum));
+        container.dataset.deleteList = JSON.stringify(deleteCards);
+        console.log("deleteCards", deleteCards);
+    } else if (mode == "notKnown") {
+        // Nothing to do for now
+    }
+
     container.removeChild(frontcard);
     backcard.className="flipper frontcard";
     container.className="flip-container";
 
-    var cardnum=parseInt(container.dataset.cardnum);
+        /*
+        var nextBtn = document.getElementById(container.id + '-next');
+        // Hide or show Next when only one or more cards remain
+        if (currentCards.length <= 1) {
+            nextBtn.classList.add('hide');
+            nextBtn.style.pointerEvents = 'none';
+        } else {
+            nextBtn.classList.remove('hide');
+            nextBtn.style.pointerEvents = 'auto';
+        }
+        if (currentCards.length === 0) {
+            // All cards learned: show special message
+            container.innerHTML = '';
+            // Hide next button
+            nextBtn.classList.add('hide');
+            nextBtn.style.pointerEvents = 'none';
+            // Create special flashcard
+            var special = document.createElement('div');
+            special.className = 'flipper frontcard';
+            special.style.background = 'var(--snow)';
+            var msg = document.createElement('div');
+            msg.className = 'front flashcard';
+            msg.style.background = 'var(--snow)';
+            msg.style.border = '1px solid';
+            var span = document.createElement('span');
+            span.className = 'flashcardtext';
+            span.style.color = 'black';
+            span.textContent = 'You have learned all of the flashcards! Click to start over.';
+            msg.appendChild(span);
+            special.appendChild(msg);
+            container.appendChild(special);
+            // Restart on click
+            special.addEventListener('click', function(ev) {
+                ev.stopPropagation();
+                // Reset cards from full set
+                var full = JSON.parse(container.dataset.fullCards || '[]');
+                container.dataset.cards = JSON.stringify(full);
+                container.dataset.numCards = full.length;
+                // Recompute order
+                var shuffle = container.dataset.shuffleCards === 'true';
+                var order = shuffle ? randomOrderArray(full.length) : Array.from({length: full.length}, function(_, i){ return i; });
+                container.dataset.cardOrder = JSON.stringify(order);
+                container.dataset.cardnum = 0;
+                // Restore next button
+                nextBtn.classList.remove('hide');
+                nextBtn.style.pointerEvents = 'auto';
+                nextBtn.innerHTML = 'Next >';
+                // Render cards
+                container.innerHTML = '';
+                createCards(container.id);
+            });
+        } else {
+            // Recompute order and reset pointer
+            var shuffle = container.dataset.shuffleCards === 'true';
+            var order = shuffle ? randomOrderArray(currentCards.length) : Array.from({length: currentCards.length}, function(_, i){ return i; });
+            container.dataset.cardOrder = JSON.stringify(order);
+            container.dataset.cardnum = 0;
+            // Advance to next card
+            window.checkFlip(container.id);
+        }
+        */
+
+    // Track the current index before increment
 
     let cardOrder = JSON.parse(container.dataset.cardOrder);
 
-    //var cards=eval('cards'+container.id);
     var cards=JSON.parse(container.dataset.cards);
-
     var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum);
     container.append(flipper);
     cardnum= (cardnum+1) % parseInt(container.dataset.numCards);
     if ((cardnum == 0) && (container.dataset.shuffleCards == "true")) {
+
+        if (deleteCards.length>0) {
+            // Sort indices in descending order
+            deleteCards.sort((a, b) => b - a);
+
+            for (const index of deleteCards) {
+                if (index >= 0 && index < cards.length) {
+                    cards.splice(index, 1);
+                }
+            }
+            console.log("After deletion, cards:", cards);
+        }
+        // Have to deal with empty set of cards later!!!
+
+        // WILL NEED TO UPDATE IF ABOVE WORKS
         cardOrder = randomOrderArray(parseInt(container.dataset.numCards));
         container.dataset.cardOrder = JSON.stringify(cardOrder);
         //console.log(cardOrder);
     }
 
-    container.dataset.cardnum=cardnum;
-    if (cardnum != 1){
-        next.innerHTML="Next >";
-    } else {
-        //next.innerHTML="Reload \\(\\circlearrowleft\\) ";
-        next.innerHTML = 'Reload <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#reload-icon"/></svg>';
-        if (typeof MathJax != 'undefined') {
-            var version = MathJax.version;
-            //console.log('MathJax version', version);
-            if (version[0] == "2") {
-                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-            } else if (version[0] == "3") {
-                MathJax.typeset([next]);
+    container.dataset.cardnum = cardnum;
+    // Determine button label based on position in cycle
+    var nCards = parseInt(container.dataset.numCards, 10);
+    if (nCards > 1) {
+        // On last card of cycle, show Reload; otherwise Next
+        console.log(currentIdx, nCards);
+        if (currentIdx === nCards - 1) {
+            next.innerHTML = 'Reload <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#reload-icon"/></svg>';
+            if (typeof MathJax !== 'undefined') {
+                var version = MathJax.version;
+                if (version[0] == '2') {
+                    MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+                } else if (version[0] == '3') {
+                    MathJax.typeset([next]);
+                }
             }
         } else {
-            //console.log('MathJax not detected');
+            next.innerHTML = 'Next >';
         }
-
-
     }
 
     if (typeof MathJax != 'undefined') {
@@ -212,6 +297,11 @@ function cleanup(container, frontcard, backcard, next) {
     /* container.tabIndex= 0; */
     /* container.focus(); */
     next.classList.remove('hide');
+    // Hide Next when only one or no cards remain
+    if (parseInt(container.dataset.numCards, 10) <= 1) {
+        next.classList.add('hide');
+        next.style.pointerEvents = 'none';
+    }
     container.addEventListener('swiped-left', function(e) {
         /*
           console.log(e.detail);
@@ -237,6 +327,8 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     //console.log(backColors)
 
     var flipper = document.createElement('div');
+    flipper.dataset.cardnum = seq;
+    console.log('Creating card', cardnum, 'with sequence', seq);
     if (frontCard){
         flipper.className="flipper frontcard";    
     }
@@ -247,12 +339,11 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     var front = document.createElement('div');
     front.className='front flashcard';
 
+
     var frontSpan= document.createElement('span');
     frontSpan.className='flashcardtext';
     frontSpan.innerHTML=jaxify(cards[cardnum]['front']);
     frontSpan.style.color=textColors[seq % textColors.length];
-    //frontSpan.textContent=jaxify(cards[cardnum]['front']);
-    //front.style.background='var(' + colors[cardnum % colors.length] + ')';
     front.style.background=colors[seq % colors.length];
     front.append(frontSpan);
 
@@ -285,6 +376,21 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
 
     flipper.append(back);
 
+    // Handle known click: remove card and advance or restart when done
+    knownSpan.addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Starting point -- just slide and then start to port this stuff over
+        slide2(mydiv.id, 'known');
+
+    });
+
+
+    // Handle not-known click: just advance
+    notKnownSpan.addEventListener('click', function(e) {
+        e.stopPropagation();
+        //window.checkFlip(mydiv.id);
+        slide2(mydiv.id, 'notKnown');
+    });
     return flipper;
 
 }
@@ -402,19 +508,9 @@ function createCards(id) {
     if (keyControl) {
         mydiv.onkeydown = function(event){ window.checkKey(mydiv, event); };
     }
-    // Save parameters for dynamic topic changes
-    mydiv.dataset.keyControl = keyControl;
-    mydiv.dataset.grabFocus = grabFocus;
-    mydiv.dataset.title = title;
-    mydiv.dataset.subject = subject;
-    /* mydiv.addEventListener('keydown', function(event){event.stopPropagation(); console.log(event); event.preventDefault();}, true); */
-    /*mydiv.onkeypress = function(event){console.log(event); event.preventDefault();};*/
-
-    //console.log(mydiv);
-
-    // var cards=eval('cards'+id);
     // Store cards and color data in the container's dataset for later access in cleanup()
     mydiv.dataset.cards = JSON.stringify(cards);
+    mydiv.dataset.deleteList = [];
     mydiv.dataset.frontColors = JSON.stringify(frontColors);
     mydiv.dataset.backColors = JSON.stringify(backColors);
     mydiv.dataset.textColors = JSON.stringify(textColors);
