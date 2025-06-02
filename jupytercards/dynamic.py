@@ -78,6 +78,10 @@ def _build_js(div_id: str,
               static: bool,
               url: Optional[str]) -> str:
     """Build the JavaScript payload to initialize flashcards."""
+
+    # Add unique sequence number to each card
+    for i, card in enumerate(cards):
+        card['seqNum'] = i 
     # MutationObserver to wait for div, set dataset attributes, and initialize cards
     observer = f"""(function() {{
     var observer = new MutationObserver(function(mutations, obs) {{
