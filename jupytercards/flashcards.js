@@ -329,6 +329,13 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     notKnownSpan.className = 'flashcardNotKnown';
     notKnownSpan.innerHTML= '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#x-mark"/></svg>';
     front.append(notKnownSpan);
+    // Hide known/not-known icons if disabled via known_widgets flag
+    if (mydiv.dataset.knownWidgets === 'false') {
+        knownSpan.style.display = 'none';
+        knownSpan.style.pointerEvents = 'none';
+        notKnownSpan.style.display = 'none';
+        notKnownSpan.style.pointerEvents = 'none';
+    }
 
 
 

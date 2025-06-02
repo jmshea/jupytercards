@@ -115,7 +115,8 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
                        text_colors=None,
                        title='',
                        subject='',
-                       topics=None):  
+                       topics=None,
+                       known_widgets=True):  
     '''
     Display interactive flash cards using a mix of Python and Javascript to support
     use in rendered notebooks (especially JupyterBook, but also Voila)
@@ -143,6 +144,8 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     subject = string, subject of this flashcard set for use in structured data
 
     topics = string or list, topic or topics to filter flashcards
+
+    known_widgets = boolean, whether to display known/not known icons and enable actions for those icons.
 
     John  M. Shea
     2021-2025
@@ -215,7 +218,9 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     else:
         _topics_list = []
     _topics_json = json.dumps(_topics_list)
-    mydiv = f'<div class="flip-container" id="{div_id}" data-topics=\'{_topics_json}\' tabindex="0" style="outline:none;"></div>'
+    mydiv = (f'<div class="flip-container" id="{div_id}" '
+             f'data-topics=\'{_topics_json}\' data-known-widgets=\'{str(known_widgets).lower()}\' '
+             f'tabindex="0" style="outline:none;"></div>')
 
 
 
