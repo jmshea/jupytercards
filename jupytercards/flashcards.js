@@ -54,28 +54,52 @@ window.setTopics = function(idOrElem, topics) {
 };
 
 window.flipCard = function flipCard(ths) {
+
+    var container = ths;
     //console.log(ths);
     //console.log(ths.id);
-    ths.classList.toggle("flip"); 
-    ths.focus();
-    var next=document.getElementById(ths.id+'-next');
-    next.style.pointerEvents='none';
-    /* ths.blur(); */
-    next.classList.add('flipped');
-    if (typeof MathJax != 'undefined') {
-        var version = MathJax.version;
-        //console.log('MathJax version', version);
-        if (version[0] == "2") {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-        } else if (version[0] == "3") {
-            MathJax.typeset([ths]);
-        }
+    if (container.firstChild.firstChild.classList.contains('complete')) {
+        //console.log("Restarting flashcards");
+        container.dataset.deleteList = JSON.stringify([]);
+        container.dataset.cardnum = 0;
+        /*
+          var shuffle = container.dataset.shuffleCards === 'true';
+          var order = shuffle ? randomOrderArray(full.length) : Array.from({length: full.length}, function(_, i){ return i; });
+          container.dataset.cardOrder = JSON.stringify(order);
+          container.dataset.cardnum = 0;
+        */
+        // Restore next button
+
+        /*
+          nextBtn.classList.remove('hide');
+          nextBtn.style.pointerEvents = 'auto';
+          nextBtn.innerHTML = 'Next >';
+        */
+
+        // Render cards
+        container.innerHTML = '';
+        createCards(container.id);
     } else {
-        //console.log('MathJax not detected');
+        ths.classList.toggle("flip"); 
+        ths.focus();
+        var next=document.getElementById(ths.id+'-next');
+        next.style.pointerEvents='none';
+        /* ths.blur(); */
+        next.classList.add('flipped');
+        if (typeof MathJax != 'undefined') {
+            var version = MathJax.version;
+            //console.log('MathJax version', version);
+            if (version[0] == "2") {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+            } else if (version[0] == "3") {
+                MathJax.typeset([ths]);
+            }
+        } else {
+            //console.log('MathJax not detected');
+        }
+
+        setTimeout(reenableNext, 600, ths, next);
     }
-
-
-    setTimeout(reenableNext, 600, ths, next);
 }
 
 window.checkKey = function checkKey(container, event) {
@@ -109,6 +133,7 @@ function reenableNext(ths, next) {
 
 
 function slide2(containerId, mode) {
+    //console.log("Sliding container:", containerId, "with mode:", mode);
     var container = document.getElementById(containerId);
     var next=document.getElementById(containerId+'-next');
     var frontcard = container.children[0];
@@ -118,7 +143,7 @@ function slide2(containerId, mode) {
     if (mode == "known") {
         deleteList.push(JSON.parse(frontcard.dataset.seqNum));
         container.dataset.deleteList = JSON.stringify(deleteList);
-        console.log("deleteList", deleteList);
+        //console.log("deleteList", deleteList);
     } else if (mode == "notKnown") {
         // Nothing to do for now
     }
@@ -142,43 +167,18 @@ function slide2(containerId, mode) {
 
         setTimeout(slideback, 600, container, frontcard, backcard, next, mode);
     } else {
-        container.innerHTML = '';
-        // Hide next button
-        //nextBtn.classList.add('hide');
-        //nextBtn.style.pointerEvents = 'none';
-        // Create special flashcard
-        var special = document.createElement('div');
-        special.className = 'flipper frontcard';
-        special.style.background = 'var(--snow)';
+        frontcard.innerHTML = '';
+        frontcard.classname = 'front complete';
         var msg = document.createElement('div');
-        msg.className = 'front flashcard';
-        msg.style.background = 'var(--snow)';
-        msg.style.border = '1px solid';
+        //msg.className = 'front flashcard complete';
+        msg.className = 'front complete';
         var span = document.createElement('span');
-        span.className = 'flashcardtext';
-        span.style.color = 'black';
+        span.className = 'flashcardtext complete';
+        //span.style.color = 'black';
         span.textContent = 'You have learned all of the flashcards! Click to start over.';
         msg.appendChild(span);
-        special.appendChild(msg);
-        container.appendChild(special);
-        // Restart on click
-        special.addEventListener('click', function(ev) {
-            ev.stopPropagation();
-            console.log("Restarting flashcards");
-            container.dataset.deleteList = JSON.stringify([]);
-            var shuffle = container.dataset.shuffleCards === 'true';
-            var order = shuffle ? randomOrderArray(full.length) : Array.from({length: full.length}, function(_, i){ return i; });
-            container.dataset.cardOrder = JSON.stringify(order);
-            container.dataset.cardnum = 0;
-            // Restore next button
-            nextBtn.classList.remove('hide');
-            nextBtn.style.pointerEvents = 'auto';
-            nextBtn.innerHTML = 'Next >';
-            // Render cards
-            container.innerHTML = '';
-            createCards(container.id);
-        });
-
+        frontcard.appendChild(msg);
+        container.style.pointerEvents='auto';
 
     }
 }
@@ -187,7 +187,7 @@ function slide2(containerId, mode) {
 window.checkFlip = function checkFlip(containerId) {
     var container = document.getElementById(containerId);
 
-    if (container.classList.contains('flip')) {
+if (container.classList.contains('flip')) {
         container.classList.remove('flip');
             setTimeout(slide2, 600, containerId, 'next');
     } else {
@@ -221,15 +221,14 @@ function cleanup(container, frontcard, backcard, next, mode) {
     // check if this card's seqNum is in the deleteList
     while ( deleteList.includes(cardOrder[cardnum]) ) {
         cardnum = (cardnum + 1) % parseInt(numCards);
-        console.log("Skipping card number:", cardnum, "of", numCards);
+        //console.log("Skipping card number:", cardnum, "of", numCards);
     }
 
     var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum);
 
     container.append(flipper);
     cardnum= (cardnum+1) % parseInt(numCards);
-    console.log("Next card number:", cardnum, "of", numCards);
-    console.log('In cleanup(), cards:',cards);
+    //console.log("Next card number:", cardnum, "of", numCards);
 
     container.dataset.cardnum = cardnum;
     // Determine button label based on position in cycle
@@ -263,7 +262,15 @@ function cleanup(container, frontcard, backcard, next, mode) {
     // Hide Next when only one or no cards remain
     if (cardsLeft > 1) {
         next.classList.remove('hide');
+        next.style.pointerEvents = 'auto';
+    } else { // Hide the notKnown button if only one card left
+        var notKnown = backcard.querySelector('.flashcardNotKnown');
+        notKnown.classList.add('hide');
+        notKnown.pointerEvents = 'none';
+        //console.log(notKnown);
+        //console.log(backcard.querySelector('.flashcardNotKnown'));
     }
+
     if (parseInt(container.dataset.numCards, 10) <= 1) {
         next.classList.add('hide');
         next.style.pointerEvents = 'none';
@@ -275,9 +282,6 @@ function cleanup(container, frontcard, backcard, next, mode) {
         */
         checkFlip(container.id);
     }, {once: true });
-
-    
-
 
 }
 
@@ -295,7 +299,7 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
     // JMS: Can this be removed now? Should colors only depend on seqNum, so they are consistent?
     flipper.dataset.cardnum = cardnum;
 
-    console.log('Creating card', cardnum, 'with sequence', seq);
+    //console.log('Creating card', cardnum, 'with sequence', seq);
     if (frontCard){
         flipper.className="flipper frontcard";    
     }

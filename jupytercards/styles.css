@@ -111,6 +111,12 @@
     font-size: 1.5em;
 }
 
+.flashcardtext.complete{
+    color: var(--rich-black-fogra-39);
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 .back .flashcardtext{
     font-size: 1.2em;
 }
@@ -133,6 +139,11 @@
     height: auto;
 }
 
+.flashcardNotKnown.hide {
+    display: none;
+}
+
+
 
 
 
@@ -152,6 +163,17 @@
     transform: rotateY(0deg);
 	  z-index: 2;
 }
+
+.front.complete{
+	  backface-visibility: hidden;
+    background: var(--snow);
+    border-style: solid;
+    border-radius: 10px;
+    transform: rotateY(0deg);
+    color: 'black';
+	  z-index: 2;
+}
+
 
 /* back, initially hidden pane */
 .back {
