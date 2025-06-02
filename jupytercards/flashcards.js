@@ -448,6 +448,7 @@ function createCards(id) {
             topics = [mydiv.dataset.topics];
         }
     }
+    //console.log('Active topics:', topics);
 
     // Initialize cards array from dataset
     var cards = JSON.parse(mydiv.dataset.cards || '[]');
@@ -473,6 +474,8 @@ function createCards(id) {
     } else {
         cards = fullCards;
     }
+    // Need to store the filtered cards in the dataset
+    mydiv.dataset.cards = JSON.stringify(cards);
 
     // Set up click and keyboard controls
     mydiv.onclick = function(){ window.flipCard(mydiv); };
@@ -484,7 +487,6 @@ function createCards(id) {
 
     // Store cards and color data in the container's dataset for later access in cleanup()
     /*
-    mydiv.dataset.cards = JSON.stringify(cards);
     mydiv.dataset.frontColors = JSON.stringify(frontColors);
     mydiv.dataset.backColors = JSON.stringify(backColors);
     mydiv.dataset.textColors = JSON.stringify(textColors);
