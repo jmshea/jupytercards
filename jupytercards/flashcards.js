@@ -62,19 +62,6 @@ window.flipCard = function flipCard(ths) {
         //console.log("Restarting flashcards");
         container.dataset.deleteList = JSON.stringify([]);
         container.dataset.cardnum = 0;
-        /*
-          var shuffle = container.dataset.shuffleCards === 'true';
-          var order = shuffle ? randomOrderArray(full.length) : Array.from({length: full.length}, function(_, i){ return i; });
-          container.dataset.cardOrder = JSON.stringify(order);
-          container.dataset.cardnum = 0;
-        */
-        // Restore next button
-
-        /*
-          nextBtn.classList.remove('hide');
-          nextBtn.style.pointerEvents = 'auto';
-          nextBtn.innerHTML = 'Next >';
-        */
 
         // Render cards
         container.innerHTML = '';
@@ -435,6 +422,67 @@ function createStructuredData(mydiv, cards, title, subject) {
 function createCards(id) {
     var mydiv = document.getElementById(id);
     if (!mydiv) return;
+
+    // Handle localStorage consent prompt
+    var localStorageEnabled = mydiv.dataset.localStorage === 'true';
+    if (localStorageEnabled) {
+        var lsKey = mydiv.dataset.url || ''
+        if (!lsKey) {
+            lsKey = JSON.parse(mydiv.dataset.cards)[0]['front'] || 'flashcards';
+        }
+
+        lsKey = 'allow-storage-' + lsKey;
+        console.log('LocalStorage key:', lsKey);
+        if (!window.localStorage.getItem(lsKey)) {
+            var flipper = document.createElement('div');
+
+            // JMS: Can this be removed now? Should colors only depend on seqNum, so they are consistent?
+            flipper.dataset.cardnum = cardnum;
+
+            flipper.className="flipper frontcard";    
+
+            var front = document.createElement('div');
+            front.className='front complete';
+
+
+            var frontSpan= document.createElement('span');
+            frontSpan.className='flashcardtext storage';
+            frontSpan.innerHTML= 'Do you want to store information on your progress in learning these flashcards on your local machine?<br><br>' +
+                '<div class="flashcard buttons">' + 
+                '<button id="' + id + '-ls-yes" class="flashcard button">Yes</button> ' +
+                '<button id="' + id + '-ls-no" class="flashcard button">No</button>' +
+                '</div>';
+
+
+            front.append(frontSpan);
+
+            flipper.append(front);
+            mydiv.append(flipper);
+
+            document.getElementById(id + '-ls-yes').onclick = function(event) {
+                window.localStorage.setItem(lsKey, 'true');
+                mydiv.dataset.localStorage = 'false';
+               
+                var frontcard = mydiv.children[0];
+                mydiv.removeChild(frontcard);
+
+                createCards(id);
+                event.preventDefault();
+                event.stopPropagation();
+            };
+            document.getElementById(id + '-ls-no').onclick = function(event) {
+                mydiv.dataset.localStorage = 'false';
+                var frontcard = mydiv.children[0];
+                mydiv.removeChild(frontcard);
+
+                createCards(id);
+                event.preventDefault();
+                event.stopPropagation();
+            };
+
+            return;
+        }
+    }
 
     // Retrieve parameters from dataset
     var keyControl = mydiv.dataset.keyControl === 'true';

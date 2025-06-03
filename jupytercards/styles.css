@@ -117,6 +117,28 @@
     font-weight: bold;
 }
 
+.flashcardtext.storage{
+    color: var(--rich-black-fogra-39);
+    font-size: 1.5em;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.flashcard.buttons{
+    display: flex;
+    justify-content: center;
+}
+
+.flashcard.button{
+    border-style: none;
+    margin: 10px;
+    font-size: 1.2em;
+    background-color: #00000000;
+    color: var(--rich-black-fogra-39);
+}
+
 .back .flashcardtext{
     font-size: 1.2em;
 }

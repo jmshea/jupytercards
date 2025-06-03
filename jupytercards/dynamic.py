@@ -87,6 +87,7 @@ def _build_js(div_id: str,
     var observer = new MutationObserver(function(mutations, obs) {{
         var el = document.getElementById("{div_id}");
         if (el) {{
+            el.dataset.url = {json.dumps(url) if url else '""'};
             el.dataset.cards = JSON.stringify({json.dumps(cards)});
             el.dataset.frontColors = JSON.stringify({json.dumps(front_colors)});
             el.dataset.backColors = JSON.stringify({json.dumps(back_colors)});
@@ -116,7 +117,8 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
                        title='',
                        subject='',
                        topics=None,
-                       known_widgets=True):  
+                       known_widgets=True,
+                       local_storage=False):  
     '''
     Display interactive flash cards using a mix of Python and Javascript to support
     use in rendered notebooks (especially JupyterBook, but also Voila)
@@ -146,6 +148,7 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     topics = string or list, topic or topics to filter flashcards
 
     known_widgets = boolean, whether to display known/not known icons and enable actions for those icons.
+    local_storage = boolean, whether to prompt for and enable localStorage consent (default False).
 
     John  M. Shea
     2021-2025
@@ -210,6 +213,7 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
 
     # This will be the container for the cards, bootstrap topics to Javascript
     # Prepare topics list for JS
+    # Include data-local-storage attribute if requested
     if topics:
         if isinstance(topics, str):
             _topics_list = [topics]
@@ -220,6 +224,7 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     _topics_json = json.dumps(_topics_list)
     mydiv = (f'<div class="flip-container" id="{div_id}" '
              f'data-topics=\'{_topics_json}\' data-known-widgets=\'{str(known_widgets).lower()}\' '
+             f'data-local-storage=\'{str(local_storage).lower()}\' '
              f'tabindex="0" style="outline:none;"></div>')
 
 
