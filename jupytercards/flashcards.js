@@ -57,7 +57,7 @@ window.resetDeleteList = function(container) {
     container.dataset.deleteList = JSON.stringify([]);
     // Clear persisted deleteList in localStorage if consented
     (function() {
-        var storageSuffix = container.dataset.url || '';
+        var storageSuffix = container.dataset.localStorageKey;
         if (!storageSuffix) {
             try {
                 storageSuffix = JSON.parse(container.dataset.cards)[0]['front'] || 'flashcards';
@@ -154,7 +154,7 @@ function slide2(containerId, mode) {
         //console.log("deleteList", deleteList);
         // Persist deleteList in localStorage if consented
         (function() {
-            var storageSuffix = container.dataset.url || '';
+            var storageSuffix = container.dataset.localStorageKey;
             if (!storageSuffix) {
                 try {
                     storageSuffix = JSON.parse(container.dataset.cards)[0]['front'] || 'flashcards';
@@ -460,13 +460,42 @@ function createCards(id) {
     var mydiv = document.getElementById(id);
     if (!mydiv) return;
 
+    // Initialize cards array from dataset
+    var cards = JSON.parse(mydiv.dataset.cards || '[]');
+
+    // Preserve full set of cards in dataset.fullCards
+    var fullCards;
+    if (mydiv.dataset.fullCards) {
+        fullCards = JSON.parse(mydiv.dataset.fullCards);
+    } else {
+        fullCards = cards;
+        mydiv.dataset.fullCards = JSON.stringify(fullCards);
+    }
+
+
+    // Bootstrap topics: filter cards based on data-topics attribute
+    var topics = [];
+    if (mydiv.dataset.topics) {
+        try {
+            topics = JSON.parse(mydiv.dataset.topics);
+        } catch (e) {
+            topics = [mydiv.dataset.topics];
+        }
+    }
+
     // Handle localStorage consent prompt
     var localStorageEnabled = mydiv.dataset.localStorage === 'true';
     if (localStorageEnabled) {
         var lsKey = mydiv.dataset.url || ''
-        if (!lsKey) {
-            lsKey = JSON.parse(mydiv.dataset.cards)[0]['front'] || 'flashcards';
+        if (lsKey == '') {
+            lsKey = fullCards[0]['front'] || 'flashcards';
         }
+
+        if (topics && topics != []) {
+            lsKey +='-' + mydiv.dataset.topics.replace(/[\[\]\"\'\s]/g, '');
+        }
+        console.log('LocalStorage key:', lsKey);
+        mydiv.dataset.localStorageKey = lsKey;
 
         lsKey = 'jc-allow-storage-' + lsKey;
         //console.log('LocalStorage key:', lsKey);
@@ -531,28 +560,7 @@ function createCards(id) {
     var backColors = JSON.parse(mydiv.dataset.backColors || '[]');
     var textColors = JSON.parse(mydiv.dataset.textColors || '[]');
 
-    // Bootstrap topics: filter cards based on data-topics attribute
-    var topics = [];
-    if (mydiv.dataset.topics) {
-        try {
-            topics = JSON.parse(mydiv.dataset.topics);
-        } catch (e) {
-            topics = [mydiv.dataset.topics];
-        }
-    }
     //console.log('Active topics:', topics);
-
-    // Initialize cards array from dataset
-    var cards = JSON.parse(mydiv.dataset.cards || '[]');
-
-    // Preserve full set of cards in dataset.fullCards
-    var fullCards;
-    if (mydiv.dataset.fullCards) {
-        fullCards = JSON.parse(mydiv.dataset.fullCards);
-    } else {
-        fullCards = cards;
-        mydiv.dataset.fullCards = JSON.stringify(fullCards);
-    }
 
     // Filter cards by topics if provided
     if (topics.length > 0) {
@@ -579,26 +587,21 @@ function createCards(id) {
     var deleteList = [];
     (function() {
         // Compute storage suffix for keys
-        var storageSuffix = mydiv.dataset.url || '';
-        if (!storageSuffix) {
-            try {
-                storageSuffix = JSON.parse(mydiv.dataset.cards)[0]['front'] || 'flashcards';
-            } catch (e) {
-                storageSuffix = 'flashcards';
-            }
-        }
+        var storageSuffix = mydiv.dataset.localStorageKey;
         var allowKey = 'jc-allow-storage-' + storageSuffix;
         var deleteKey = 'jc-deleteList-' + storageSuffix;
         if (window.localStorage && window.localStorage.getItem(allowKey) === 'true') {
+            console.log('allowKey', window.localStorage.getItem(allowKey));
             try {
                 deleteList = JSON.parse(window.localStorage.getItem(deleteKey) || '[]');
-                //console.log('Loaded deleteList from localStorage:', deleteList);
+                console.log('Loaded deleteList from localStorage:', deleteList);
             } catch (e) {
                 deleteList = [];
             }
         }
         mydiv.dataset.deleteList = JSON.stringify(deleteList);
     })();
+    console.log('deleteList: ', deleteList);
 
     // Store cards and color data in the container's dataset for later access in cleanup()
     /*
@@ -647,6 +650,7 @@ function createCards(id) {
 
 
     var flipper;
+    console.log('Creating cards for container:', mydiv.id, 'with', cardsLeft, 'cards left.');
     for (var i=0; i<Math.min(cardsLeft,2); i++) {
 
         if (i==0){
