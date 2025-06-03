@@ -148,7 +148,8 @@ def display_flashcards(ref, keyControl=True, grabFocus=False,
     topics = string or list, topic or topics to filter flashcards
 
     known_widgets = boolean, whether to display known/not known icons and enable actions for those icons.
-    local_storage = boolean, whether to prompt for and enable localStorage consent (default False).
+    local_storage = boolean, whether to prompt for and enable localStorage  for persistence across
+                    sessions (default False).
 
     John  M. Shea
     2021-2025
