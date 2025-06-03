@@ -25,6 +25,10 @@ Flash card content can be loaded from:
 
 As of version 1.7, JupyterCards supports switching cards by swiping left on touch devices. 
 
+**Tracking Known and Unknown Cards**
+
+As of version 3.1, JupyterCards will default to showing checkmark and x-mark widgets that can be used to track which cards you already know. This can be turned off by passing `known_widgets=False`. You can add persistent storage across sessions by setting `local_storage=True`. The default is `False`. If set to `True`, the user will be asked one time whether they wish to store their progress in local storage. Then cards that are marked as known when be stored in the browser's persistent localStorage, and this list will be persisted across sessions. 
+
 **Note:** JupyterCards always requires MathJax to be loaded. If you are using JupyterBook,
 it may not always load MathJax if you do not have any LaTeX on your page. To resolve this, 
 you can include the invisible math command `$\,\!$` in any Markdown cell. I hope to remove
