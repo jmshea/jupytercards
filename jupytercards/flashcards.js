@@ -53,6 +53,27 @@ window.setTopics = function(idOrElem, topics) {
     createCards(mydiv.id);
 };
 
+window.resetDeleteList = function(container) {
+    container.dataset.deleteList = JSON.stringify([]);
+    // Clear persisted deleteList in localStorage if consented
+    (function() {
+        var storageSuffix = container.dataset.url || '';
+        if (!storageSuffix) {
+            try {
+                storageSuffix = JSON.parse(container.dataset.cards)[0]['front'] || 'flashcards';
+            } catch (e) {
+                storageSuffix = 'flashcards';
+            }
+        }
+        var allowKey = 'jc-allow-storage-' + storageSuffix;
+        var deleteKey = 'jc-deleteList-' + storageSuffix;
+        if (window.localStorage && window.localStorage.getItem(allowKey) === 'true') {
+            window.localStorage.removeItem(deleteKey);
+        }
+    })();
+
+}
+
 window.flipCard = function flipCard(ths) {
 
     var container = ths;
@@ -60,7 +81,7 @@ window.flipCard = function flipCard(ths) {
     //console.log(ths.id);
     if (container.firstChild.firstChild.classList.contains('complete')) {
         //console.log("Restarting flashcards");
-        container.dataset.deleteList = JSON.stringify([]);
+        window.resetDeleteList(container);
         container.dataset.cardnum = 0;
 
         // Render cards
@@ -131,6 +152,22 @@ function slide2(containerId, mode) {
         deleteList.push(JSON.parse(frontcard.dataset.seqNum));
         container.dataset.deleteList = JSON.stringify(deleteList);
         //console.log("deleteList", deleteList);
+        // Persist deleteList in localStorage if consented
+        (function() {
+            var storageSuffix = container.dataset.url || '';
+            if (!storageSuffix) {
+                try {
+                    storageSuffix = JSON.parse(container.dataset.cards)[0]['front'] || 'flashcards';
+                } catch (e) {
+                    storageSuffix = 'flashcards';
+                }
+            }
+            var allowKey = 'jc-allow-storage-' + storageSuffix;
+            var deleteKey = 'jc-deleteList-' + storageSuffix;
+            if (window.localStorage && window.localStorage.getItem(allowKey) === 'true') {
+                window.localStorage.setItem(deleteKey, container.dataset.deleteList);
+            }
+        })();
     } else if (mode == "notKnown") {
         // Nothing to do for now
     }
@@ -211,7 +248,7 @@ function cleanup(container, frontcard, backcard, next, mode) {
         //console.log("Skipping card number:", cardnum, "of", numCards);
     }
 
-    var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum);
+    var flipper=createOneCard(container, false, cards, cardOrder[cardnum], cardnum, cardsLeft);
 
     container.append(flipper);
     cardnum= (cardnum+1) % parseInt(numCards);
@@ -222,13 +259,13 @@ function cleanup(container, frontcard, backcard, next, mode) {
     if (cardsLeft > 1) {
         // On last card of cycle, show Reload; otherwise Next
         //if (currentIdx === cardsLeft - 1) {
+        // JMS: This is currently broken when using known cards
         if (cardnum == 1 ) {
             next.innerHTML = 'Reload <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 26"><use xlink:href="#reload-icon"/></svg>';
         } else {
             next.innerHTML = 'Next >';
         }
     }
-
     if (typeof MathJax != 'undefined') {
         var version = MathJax.version;
         //console.log('MathJax version', version);
@@ -356,8 +393,8 @@ function createOneCard  (mydiv, frontCard, cards, cardnum, seq) {
         //window.checkFlip(mydiv.id);
         slide2(mydiv.id, 'notKnown');
     });
-    return flipper;
 
+    return flipper;
 }
 
 function randomOrderArray(N) {
@@ -431,8 +468,8 @@ function createCards(id) {
             lsKey = JSON.parse(mydiv.dataset.cards)[0]['front'] || 'flashcards';
         }
 
-        lsKey = 'allow-storage-' + lsKey;
-        console.log('LocalStorage key:', lsKey);
+        lsKey = 'jc-allow-storage-' + lsKey;
+        //console.log('LocalStorage key:', lsKey);
         if (!window.localStorage.getItem(lsKey)) {
             var flipper = document.createElement('div');
 
@@ -538,7 +575,30 @@ function createCards(id) {
         mydiv.onkeydown = function(event){ window.checkKey(mydiv, event); };
     }
 
-    mydiv.dataset.deleteList = [];
+    // Initialize deleteList, possibly from localStorage
+    var deleteList = [];
+    (function() {
+        // Compute storage suffix for keys
+        var storageSuffix = mydiv.dataset.url || '';
+        if (!storageSuffix) {
+            try {
+                storageSuffix = JSON.parse(mydiv.dataset.cards)[0]['front'] || 'flashcards';
+            } catch (e) {
+                storageSuffix = 'flashcards';
+            }
+        }
+        var allowKey = 'jc-allow-storage-' + storageSuffix;
+        var deleteKey = 'jc-deleteList-' + storageSuffix;
+        if (window.localStorage && window.localStorage.getItem(allowKey) === 'true') {
+            try {
+                deleteList = JSON.parse(window.localStorage.getItem(deleteKey) || '[]');
+                //console.log('Loaded deleteList from localStorage:', deleteList);
+            } catch (e) {
+                deleteList = [];
+            }
+        }
+        mydiv.dataset.deleteList = JSON.stringify(deleteList);
+    })();
 
     // Store cards and color data in the container's dataset for later access in cleanup()
     /*
@@ -574,18 +634,44 @@ function createCards(id) {
     }
 
     var cardnum=0;
+    var numCards = cards.length;
 
-    for (var i=0; i<2; i++) {
+    var cardsLeft = numCards - deleteList.length;
+
+    if (cardsLeft == 0) {
+        window.resetDeleteList(mydiv);
+        deleteList =[];
+        cardsLeft = cards.length;
+    }
 
 
 
-        var flipper;
+    var flipper;
+    for (var i=0; i<Math.min(cardsLeft,2); i++) {
+
         if (i==0){
+            while ( deleteList.includes(cardOrder[cardnum]) ) {
+                cardnum = (cardnum + 1) % parseInt(numCards);
+                //console.log("Skipping card number:", cardnum, "of", numCards);
+            }
             flipper=createOneCard(mydiv, true, cards, cardOrder[cardnum], cardnum);
         }
         else {
+            while ( deleteList.includes(cardOrder[cardnum]) ) {
+                cardnum = (cardnum + 1) % parseInt(numCards);
+                //console.log("Skipping card number:", cardnum, "of", numCards);
+            }
             flipper=createOneCard(mydiv, false, cards, cardOrder[cardnum], cardnum);
         }
+
+        if (cardsLeft == 1) {
+            var notKnown = flipper.querySelector('.flashcardNotKnown');
+            notKnown.classList.add('hide');
+            notKnown.pointerEvents = 'none';
+            //console.log(notKnown);
+            //console.log(backcard.querySelector('.flashcardNotKnown'));
+        }
+
 
         mydiv.append(flipper);
         if (typeof MathJax != 'undefined') {
@@ -662,12 +748,17 @@ function createCards(id) {
     mydiv.dataset.cardnum = cardnum;
 
     var next=document.getElementById(id+'-next');
-    if (cards.length==1) {
-        // Don't show next if no other cards!
+    //console.log('cardsLeft = ', cardsLeft);
+    if (cardsLeft==1) {
         next.style.pointerEvents='none';
         next.classList.add('hide');
+        var notKnown = flipper.querySelector('.flashcardNotKnown');
+        notKnown.classList.add('hide');
+        notKnown.pointerEvents = 'none';
     } else {
         next.innerHTML="Next >";
+        next.style.pointerEvents='auto';
+        next.classList.remove('hide');
     }
 
     if (grabFocus == true )
@@ -675,6 +766,7 @@ function createCards(id) {
 
     return flipper;
 }
+
 // Helper to change topics and re-render flashcards dynamically
 window.setTopics = function(idOrElem, topics) {
     var mydiv = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
