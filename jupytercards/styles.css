@@ -145,18 +145,18 @@
 
 .flashcardKnown {
     display: block;
-    position: relative;
-    top: 90%;
-    left: 85%;
+    position: absolute;
+    right: 64px;
+    bottom: 10px;
     width: 2em;
     height: auto;
 }
 
 .flashcardNotKnown {
     display: block;
-    position: relative;
-    top: 80%;
-    left: 94%;
+    position: absolute;
+    right: 26px;
+    bottom: 15px;
     width: 1.3em;
     height: auto;
 }
@@ -306,7 +306,6 @@
         left: 4px;
     }
 
-
 }
 
 @media only screen and (max-width:330px) and (max-height:600px) {
@@ -319,5 +318,5 @@
     }
     .back {
         left: 4px;
-    }
+   }
 }
